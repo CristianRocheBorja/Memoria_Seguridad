@@ -1,0 +1,169 @@
+%#######################################################################################
+%############################		CABECERA		####################################
+%#######################################################################################
+\documentclass[a4,12pt,onecolum]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel} 		% para que divida bien las silabas en final de linea
+\usepackage[margin=3cm]{geometry}	% para poner los margenes bonitos
+\usepackage{fancyhdr}
+\usepackage{graphicx} 				% meter figuras gráficas
+\graphicspath{{fotos/}}
+\usepackage{import}
+\usepackage{color} 					% para introducir colores en el documento
+\usepackage{verbatim}
+\usepackage{subfigure}
+\usepackage{listings}
+\usepackage{cite}
+%\bibliographystyle{alpha}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{subfigure}
+\usepackage{listings, courier}
+\usepackage{amssymb, amsmath, amsbsy}
+\usepackage{float}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{cite}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\usepackage{url, hyperref}
+\usepackage[nottoc]{tocbibind}
+\usepackage{titlesec}
+\setlength{\headheight}{20pt}
+
+
+% FIGURAS [htbp] significa que el orden para que LaTeX trate de incrustar la imagen es: primero que lo intente aquí (h), luego en la parte de arriba (t), a continuación, en la parte de abajo (b), y por último, en la parte de arriba de la siguiente página (p). Puedes reordenar estas letras para seleccionar el orden que prefieras. Eso sí, muchas veces LaTeX hace lo que quiere. Pero si pones [htbp], indicas a LaTeX que ponga la imagen exactamente ahí. Para usar [htbp] tienes que cargar el paquete {float}.
+
+
+%\usepackage{times} 						% tipo de letra periodico
+%\renewcommand{\familydefault}{\sfdefault}	% tipo de letra Arial
+
+% este bloque es para definir el estilo del texto C++
+\lstset{language=C++,
+  inputencoding=latin1,	% permite las tildes en el código
+  backgroundcolor=\color[gray]{0.9},% color del fondo
+  frame=single,		% dibuja un borde
+  columns=flexible,	% el tamaño de letra se ajusta al ancho
+  extendedchars=false,
+  aboveskip=1eM,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  commentstyle=\color{green}\ttfamily,
+  morecomment=[l][\color{magenta}]{\#}
+}
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters IN Acrobatâ€™s bookmarks
+    pdftoolbar=true,        % show Acrobatâ€™s toolbar?
+    pdfmenubar=true,        % show Acrobatâ€™s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={My title},    % title
+    pdfauthor={Author},     % author
+    pdfsubject={Subject},   % subject of the document
+    pdfcreator={Creator},   % creator of the document
+    pdfproducer={Producer}, % producer of the document
+    pdfkeywords={keyword1} {key2} {key3}, % list of keywords
+    pdfnewwindow=true,      % links IN new PDF window
+    colorlinks=true,        % false: boxed links; true: colored links
+    linkcolor=black,          % color of internal links (change box color with linkbordercolor)
+    citecolor=blue,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=blue           % color of external links
+}
+
+%\usepackage[hidelinks]{hyperref}% para anadir enlace dentro del documento, tiene que ser la ultima declaracion porque sino puede fallar
+
+\title{Seguridad}
+\date{\today}
+
+%---------------------- ENCABEZADO Y PIE DE PÁGINA
+
+\pagestyle{fancy}
+
+\lhead{Seguridad}
+\rhead{\leftmark}
+\cfoot{\thepage}
+
+\renewcommand{\headrulewidth}{0.4pt} % grosor de la línea de la cabecera
+\renewcommand{\footrulewidth}{0.4pt} % grosor de la línea del pie
+
+
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+%#######################################################################################
+%##############################			CUERPO			################################
+%#######################################################################################
+\begin{document}
+
+%################## PORTADA
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+\textsc{\LARGE Universidad de Murcia}\\[0.8cm]
+\textsc{\Large Grado en Ingeniería Informática}\\[0.5cm]
+\textsc{\large 4º curso}\\[0.4cm]
+\textsc{\large Grupo 6}\\[0.4cm]
+\textsc{\large Curso 2016/2017 - Junio}\\[0.4cm]
+
+\HRule \\[0.6cm]
+{ \huge \bfseries Seguridad}\\[0.3cm]
+\HRule \\[0.5cm]
+{ \Large \bfseries Práctica final}\\[0.3cm]
+\HRule \\[1.0cm]
+
+%################## AUTORES
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+Alumnos:\\
+Cristian Roche Borja \\
+\small{DNI: 76581531-H}	\\
+\large{Alicia Ruiz Tovar} \\
+\small{DNI: 48693813-F}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.3\textwidth}
+\begin{flushright} \large
+Docente: \\
+Gabriel López Millán
+Gregorio Martínez Pérez
+\end{flushright}
+\end{minipage}\\[1cm]
+
+%################## LOGO
+
+\centering
+\includegraphics[width=0.5\textwidth]{./portada/logoum.png}\\[0.8cm] % Include a department/university logo - this will require the graphicx package
+
+\end{titlepage}
+
+%################## PAGINA EN BLANCO
+
+\thispagestyle{empty}
+\textcolor[rgb]{1.00,1.00,1.00}{palabra} % Pinta "palabra" de blanco
+\newpage
+
+\setcounter{page}{3}
+
+%##################	TABLA DE CONTENIDOS
+
+\newpage
+\tableofcontents 		% indice
+\newpage
+
+%##################	CUERPO DEL DOCUMENTO
+
+%################## INTRODUCCIÓN
+
+\clearpage
+
+\end{document}
