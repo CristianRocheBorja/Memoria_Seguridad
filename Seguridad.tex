@@ -125,15 +125,15 @@
 \begin{flushleft} \large
 Alumnos:\\
 Cristian Roche Borja \\
-\small{DNI: 76581531-H}	\\
+\small{DNI: 76581531H}	\\
 \large{Alicia Ruiz Tovar} \\
-\small{DNI: 48693813-F}
+\small{DNI: 48693813F}
 \end{flushleft}
 \end{minipage}
 ~
-\begin{minipage}{0.3\textwidth}
+\begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
-Docente: \\
+Docentes: \\
 Gabriel López Millán
 Gregorio Martínez Pérez
 \end{flushright}
@@ -158,22 +158,70 @@ Gregorio Martínez Pérez
 
 \newpage
 \tableofcontents 		% indice
+\rhead[\thepage]{Índice}
 \newpage
 
 %##################	CUERPO DEL DOCUMENTO
 
 %################## INTRODUCCIÓN
 
+%\section{Introducción}
+%\rhead[\thepage]{\thesection. Introducción}
+
 \clearpage
 
 \section{NMAP Metasploit}
-\subsection{Equipo Atacante}
-El equipo que actuará como atacante hace uso de la herramienta NMAP, para instalarla ejecutamos el siguiente comando:
+\rhead[\thepage]{\thesection. NMAP Metasploit}
+
+\subsection{Víctima}
+Utilizaremos una máquina virtual de prueba. Esta máquina ha sido creada con vulnerabilidades para la práctica de ataques. La URL de descarga es la siguiente: \url{wiki.inf.um.es/metasploitable2/metasploitable-linux-2.0.0.zip}. \\
+
+La IP de esta máquina es la \texttt{192.168.62.189}.
+
+\subsection{Atacante}
+
+El equipo que actuará como atacante hace uso de la herramienta NMAP. Para instalarla ejecutamos el siguiente comando:
+
 \begin{verbatim}
 $ sudo apt-get install namp
 \end{verbatim}
-\subsection{Víctima}
-Utilizaremos una máquina virtual de prueba, esta máquina ha sido creada con vulnerabilidades para la práctica de ataques. La URL de descarga es la siguiente: wiki.inf.um.es/metasploitable2/metasploitable-linux-2.0.0.zip
 
+Establecemos en el archivo \texttt{/etc/hosts}, equivalente al DNS local, la IP de la víctima (\texttt{192.168.62.189}) y la denominamos \texttt{metasploitable}, como muestra la figura \ref{fig:nmap1}. \\
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./portada/logoum.png}
+\caption{Atacante\_dns\_victima.}
+\label{fig:nmap1}
+\end{figure}
+
+De esta forma, tenemos dos opciones para hacer referencia a la víctima. En la figura \ref{fig:nmap2} se observa el resultado de este escaneo simple fruto de cualquiera de estas dos opciones.  \\
+
+\begin{verbatim}
+$ nmap 192.168.62.189
+$ nmap metasploitable
+\end{verbatim}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./portada/logoum.png}
+\caption{Atacante\_nmap\_simplescan.}
+\label{fig:nmap2}
+\end{figure}
+
+De forma un poco más elaborada, se puede ejecutar el escaneo de puertos haciendo uso de otras técnicas:
+
+\begin{itemize}
+  \item Mediante listado de equipos: \$ nmap 192.168.62.1 192.168.62.10 192.168.62.189
+  \item Mediante subred: \$ nmap 192.168.62.0/24
+  \item Mediante un fichero que almacene las IPs (o las expresiones de las mismas) a analizar: \$ nmap -iL hosts.txt, como muestra la figura \ref{fig:nmap3}.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./portada/logoum.png}
+\caption{Atacante\_nmapscan\_filecomplex.}
+\label{fig:nmap3}
+\end{figure}
 
 \end{document}
