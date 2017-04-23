@@ -170,8 +170,8 @@ Gregorio Martínez Pérez
 
 \clearpage
 
-\section{NMAP Metasploit}
-\rhead[\thepage]{\thesection. NMAP Metasploit}
+\section{NMAP y Metasploit}
+\rhead[\thepage]{\thesection. NMAP y Metasploit}
 
 \subsection{Víctima}
 Utilizaremos una máquina virtual de prueba. Esta máquina ha sido creada con vulnerabilidades para la práctica de ataques. La URL de descarga es la siguiente: \url{wiki.inf.um.es/metasploitable2/metasploitable-linux-2.0.0.zip}. \\
@@ -179,6 +179,8 @@ Utilizaremos una máquina virtual de prueba. Esta máquina ha sido creada con vu
 La IP de esta máquina es la \texttt{192.168.62.189}.
 
 \subsection{Atacante}
+
+\subsubsection{NMAP}
 
 El equipo que actuará como atacante hace uso de la herramienta NMAP. Para instalarla ejecutamos el siguiente comando:
 
@@ -204,7 +206,7 @@ $ nmap metasploitable
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\textwidth]{./images/Atacante_nmap_simplescan.png}
+\includegraphics[width=0.8\textwidth]{./images/Atacante_nmap_simplescan.png}
 \caption{Atacante\_nmap\_simplescan.}
 \label{fig:nmap2}
 \end{figure}
@@ -219,9 +221,54 @@ De forma un poco más elaborada, se puede ejecutar el escaneo de puertos haciend
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.5\textwidth]{./images/Atacante_nmapscan_filecomplex.png}
+\includegraphics[width=0.4\textwidth]{./images/Atacante_nmapscan_filecomplex.png}
 \caption{Atacante\_nmapscan\_filecomplex.}
 \label{fig:nmap3}
 \end{figure}
+
+\subsubsection{NMAP con Metasploit}
+
+También hemos de instalar Mestasploit para hacer uso de él: \url{https://github.com/rapid7/metasploit-framework/wiki/Nightly-Installers}. Una vez instalado, con \texttt{\$ msfconsole} inicializamos Metasploit y la base de datos asociada. \\
+
+A continuación, realizamos un scanner básico de la red, almacenando el contenido en la base de datos interna y exportándolo completo de la misma a un fichero, para así analizarlo:
+
+\begin{verbatim}
+$ db_nmap -v -sV 192.168.62.0/24
+$ db_export out_ejercicio1.txt
+\end{verbatim}
+
+Como muestra la figura \ref{fig:nmap4}, se observa que en dicho fichero encontramos el contenido del escaneo. Por un lado, podemos ver información del usuario que ha invocado el Metasploit. Seguidamente, tenemos el apartado que refiere a los hosts y servicios que se han encontrado en la dirección de subred que se le ha pasado al escaneo. Por último, podemos observar que el grueso del fichero son los módulos del Metasploit.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/Atacante_scaner_y_BBDD.png}
+\caption{Atacante\_scaner\_y\_BBDD.}
+\label{fig:nmap4}
+\end{figure}
+
+\subsubsection{Wireshak: trazas}
+
+A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comandos con NMAP.
+
+\begin{itemize}
+  \item \texttt{\$ nmap —scan-delay 1000ms -p 20-30 metasploitable}. En el host \texttt{metasploitable} se lanza un escaneo de puertos cada segundo a un puerto diferente entre los puertos 20 al 30, como muestra la figura \ref{fig:nmap5}. El fin principal de realizar un escaneo de puertos de esta forma es evitar ser detectado por la seguridad que pueda tener la subred.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{./images/Atacante_scaner_y_BBDD.png}
+  \caption{Atacante\_wireshar\_scaneo\_delay.}
+  \label{fig:nmap5}
+  \end{figure}
+
+  \item \texttt{\$sudo nmap -sS -mtu 24 -p 80 metasploitable 192.168.62.102}. En el hots \texttt{metasploitable} y en la IP \texttt{192.168.62.102} se lanza un escaneo al puerto 80 con el bit SYN activado, como se muestra en la figura \ref{fig:nmap6} Lo que se hace es enviar un paquete SYN, como si se fuera a abrir una conexión real y después se espera una respuesta. Si se recibe un paquete SYN/ACK esto indica que el puerto está abierto, mientras que si se recibe un RST (reset) indica que no hay nada escuchando en el puerto. Si no se recibe ninguna respuesta después de realizar algunas retransmisiones o se recibe un ICMP entonces el puerto se marca como filtrado.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{./images/Atacante_scaner_y_BBDD.png}
+  \caption{Atacante\_wireshar\_scaneo\_delay.}
+  \label{fig:nmap6}
+  \end{figure}
+
+\end{itemize}
 
 \end{document}
