@@ -27,6 +27,7 @@
 \usepackage{url, hyperref}
 \usepackage[nottoc]{tocbibind}
 \usepackage{titlesec}
+\usepackage{fancyvrb}
 \setlength{\headheight}{20pt}
 
 
@@ -246,6 +247,8 @@ Como muestra la figura \ref{fig:nmap4}, se observa que en dicho fichero encontra
 \label{fig:nmap4}
 \end{figure}
 
+% #######################   Wireshak: trazas   ##################################
+
 \subsubsection{Wireshak: trazas}
 
 A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comandos con NMAP.
@@ -268,7 +271,38 @@ A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comando
   \caption{Atacante\_wireshar\_scaneo\_delay.}
   \label{fig:nmap6}
   \end{figure}
+  
+% #######################   Scripts NMAP   ##################################
+
+\subsection{Scripts NMAP}
+\subsubsection{Scripts /usr/share/nmap/scripts}
+En la instalación de NMAP se crea el directorio \textit{/usr/share/nmap/scripts}, este directorio contiene una lista de scripts implementados por otros usuarios y que están diseñados para ser invocados desde el comando nmap. A continuación se describen algunos:
+\begin{itemize}
+\item \texttt{http-git.nse}: Realiza una conexión al puerto 80 de la víctima en busca de un servidor web activo, si el puerto está abierto, se intenta localizar un directorio \emph{.git}. La existencia de este directorio implica que la víctima está realizando un control de versiones, por tanto, el siguiente paso que realiza el script es la búsqueda de coincidencias en \emph{Github}, si se encuentran coincidencias (por un perfil o proyecto público), se muestran un mensaje al usuario con toda la información que se ha podido extraer de la víctima de su repositorio. 
+\item \texttt{smb-server-stats.nse}: 
+\item \texttt{ssh2-enum-algos.nse}:
+\item \texttt{dhcp-discover.nse}:
+\end{itemize}
+\subsubsection{Realización de script básico}
+Se pueden crear nuevos scripts adaptados a nuestras necesidades, que automaticen tareas habituales, o repetitivas. En la siguiente url \url{http://nmap.org/book/nse-tutorial.html} se describe la estructura que debe tener el script. Para poner en práctica este apartado, a continuación, incluye el contenido de un script realizado por nosotros, las acciones que realiza son las siguientes:
+\begin{itemize}
+\item Comprobar si el equipo objeto tiene el puerto 80 abierto (el número de puerto se puede cambiar a la hora de ejecutar el comando)
+\item En el caso de que se cumpla el paso anterior, se entiende que existe un servidor web en el equipo, por tanto, se solicita la página \textit{index.html}, dicha página se crea por defecto en los navegadores web.
+\item La página web descargada se almacena en un fichero con el mismo nombre \textit{index.html}
+\end{itemize} 
+Para ejecutar el script, se debe escribir el siguiente comando:
+\begin{verbatim}
+	$ nmap -p 80 <ip> --script=http-index 
+\end{verbatim}
+\VerbatimInput{doc/http-index.nse}
+El script contiene un control de errores, por lo que se mostrará uno de los siguientes resultados:
+\begin{itemize}
+	\item ''ERROR: Fallo al obtener la url index.html"
+	\item ''ERROR: Fallo al crear/abrir el fichero index.html"
+	\item ''index.html Obtenido correctamente!"
+\end{itemize}
 
 \end{itemize}
+
 
 \end{document}
