@@ -50,7 +50,7 @@
   stringstyle=\color{red}\ttfamily,
   commentstyle=\color{green}\ttfamily,
   morecomment=[l][\color{magenta}]{\#}
-}
+}  
 
 \hypersetup{
     bookmarks=true,         % show bookmarks bar?
@@ -279,9 +279,9 @@ A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comando
 En la instalación de NMAP se crea el directorio \textit{/usr/share/nmap/scripts}, este directorio contiene una lista de scripts implementados por otros usuarios y que están diseñados para ser invocados desde el comando nmap. A continuación se describen algunos:
 \begin{itemize}
 \item \texttt{http-git.nse}: Realiza una conexión al puerto 80 de la víctima en busca de un servidor web activo, si el puerto está abierto, se intenta localizar un directorio \emph{.git}. La existencia de este directorio implica que la víctima está realizando un control de versiones, por tanto, el siguiente paso que realiza el script es la búsqueda de coincidencias en \emph{Github}, si se encuentran coincidencias (por un perfil o proyecto público), se muestran un mensaje al usuario con toda la información que se ha podido extraer de la víctima de su repositorio. 
-\item \texttt{smb-server-stats.nse}: 
-\item \texttt{ssh2-enum-algos.nse}:
-\item \texttt{dhcp-discover.nse}:
+\item \texttt{smb-server-stats.nse}: Este script explota una un fallo de \emph{Samba} corriendo sobre sistemas operativos de Windows, este vulnerabilidad permite que un usuario externo pueda solicitar los datos estadísticos del servicio, recopilando así valiosa información de los archivos que se comparten.
+\item \texttt{ssh2-enum-algos.nse}: Devuelve los algoritmos de cifrado y compresión que tiene implementados la víctima. Esta información puede ser muy útil para reducir considerablemente el tiempo de los ataques por fuerza bruta.
+\item \texttt{dhcp-discover.nse}: Script que recopila información del servidor DHCP de la red, se imprimirá por pantalla al usuario el valor de cada uno de los campos que se obtienen del DHCP (Gateway, mácara de subred, router, nombre de dominio, etc...). Para el funcionamiento del script no es necesario consumir una dirección IP.
 \end{itemize}
 \subsubsection{Realización de script básico}
 Se pueden crear nuevos scripts adaptados a nuestras necesidades, que automaticen tareas habituales, o repetitivas. En la siguiente url \url{http://nmap.org/book/nse-tutorial.html} se describe la estructura que debe tener el script. Para poner en práctica este apartado, a continuación, incluye el contenido de un script realizado por nosotros, las acciones que realiza son las siguientes:
@@ -301,6 +301,28 @@ El script contiene un control de errores, por lo que se mostrará uno de los sig
 	\item ''ERROR: Fallo al crear/abrir el fichero index.html"
 	\item ''index.html Obtenido correctamente!"
 \end{itemize}
+
+% #######################   COMANDO PORTSCAN   ##################################
+\subsubsection{Comando Portscan}
+Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para encontrar las modalidades existentes de Portscan, lanzamos la búsqueda con \emph{\$search portscan}, obtenemos el siguiente resultado:
+\begin{verbatim}
+msf > search portscan
+
+Matching Modules
+================
+
+   Name                                              Disclosure Date  Rank    Description
+   ----                                              ---------------  ----    -----------
+   auxiliary/scanner/http/wordpress_pingback_access                   normal  Wordpress Pingback Locator
+   auxiliary/scanner/natpmp/natpmp_portscan                           normal  NAT-PMP External Port Scanner
+   auxiliary/scanner/portscan/ack                                     normal  TCP ACK Firewall Scanner
+   auxiliary/scanner/portscan/ftpbounce                               normal  FTP Bounce Port Scanner
+   auxiliary/scanner/portscan/syn                                     normal  TCP SYN Port Scanner
+   auxiliary/scanner/portscan/tcp                                     normal  TCP Port Scanner
+   auxiliary/scanner/portscan/xmas                                    normal  TCP "XMas" Port Scanner
+   auxiliary/scanner/sap/sap_router_portscanner                       normal  SAPRouter Port Scanner
+\end{verbatim}
+
 
 \end{itemize}
 
