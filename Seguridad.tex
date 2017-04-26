@@ -271,6 +271,7 @@ A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comando
   \caption{Atacante\_wireshar\_scaneo\_delay.}
   \label{fig:nmap6}
   \end{figure}
+\end{itemize}
   
 % #######################   Scripts NMAP   ##################################
 
@@ -294,7 +295,7 @@ Para ejecutar el script, se debe escribir el siguiente comando:
 \begin{verbatim}
 	$ nmap -p 80 <ip> --script=http-index 
 \end{verbatim}
-\VerbatimInput{doc/http-index.nse}
+\lstinputlisting[breaklines]{doc/http-index.nse}
 El script contiene un control de errores, por lo que se mostrará uno de los siguientes resultados:
 \begin{itemize}
 	\item ''ERROR: Fallo al obtener la url index.html"
@@ -303,28 +304,44 @@ El script contiene un control de errores, por lo que se mostrará uno de los sig
 \end{itemize}
 
 % #######################   COMANDO PORTSCAN   ##################################
+
 \subsubsection{Comando Portscan}
-Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para encontrar las modalidades existentes de Portscan, lanzamos la búsqueda con \emph{\$search portscan}, obtenemos el siguiente resultado:
-\begin{verbatim}
-msf > search portscan
+Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para encontrar las modalidades existentes de Portscan, lanzamos la búsqueda con \emph{\$search portscan}, el resultado se puede ver en la figura \ref{fig:meta2}.
 
-Matching Modules
-================
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/Atacante_metasploit_portscan_search.png}
+\caption{Metasploit Portscan Search}
+\label{fig:meta2}
+\end{figure}
+  
+\begin{enumerate}
+\item Para este ejemplo haremos uso de \emph{auxiliary/scanner/portscan/tcp}, para ello, lo seleccionamos ejecutando \emph{\$use auxiliary/scanner/portscan/tcp}.
+\item Visualizamos los diferentes parámetros de configuración que permite con el comando \emph{\$show options}.
+\item Ajustamos el número de hilos y la ip de la víctima.
+\item Lanzamos el escaneo con el comando \emph{\$run}. Se muestra el resultado de la ejecución en la imagen \ref{fig:meta1}.
+\item El funcionamiento del comando \emph{portscan} es muy similar al de Nmap, con la ventaja de poder ajustar el número de hilos que queremos dedicar al escaneo.
+\end{enumerate}
 
-   Name                                              Disclosure Date  Rank    Description
-   ----                                              ---------------  ----    -----------
-   auxiliary/scanner/http/wordpress_pingback_access                   normal  Wordpress Pingback Locator
-   auxiliary/scanner/natpmp/natpmp_portscan                           normal  NAT-PMP External Port Scanner
-   auxiliary/scanner/portscan/ack                                     normal  TCP ACK Firewall Scanner
-   auxiliary/scanner/portscan/ftpbounce                               normal  FTP Bounce Port Scanner
-   auxiliary/scanner/portscan/syn                                     normal  TCP SYN Port Scanner
-   auxiliary/scanner/portscan/tcp                                     normal  TCP Port Scanner
-   auxiliary/scanner/portscan/xmas                                    normal  TCP "XMas" Port Scanner
-   auxiliary/scanner/sap/sap_router_portscanner                       normal  SAPRouter Port Scanner
-\end{verbatim}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/Atacante_metasploit_portscan.png}
+\caption{Metasploit Portscan}
+\label{fig:meta1}
+\end{figure}
+  
+% #######################   EXPLOTAR VULNERABILIDADES   ##################################
 
+\section{Explotar Vulnerabilidades}
+Para usuarios que no son expertos en el uso de Metasploit, se recomienda el uso de la interfaz gráfica del programa, se puede descargar desde el siguiente link \url{https://www.rapid7.com/products/metasploit/download/}. La instalación es muy simple en Linux, basta con descargarse el programa, convertirlo en ejecutable con el comando \emph{\$chmod 777 metasploit-latest-linux-x64-installer.run} y ejecutar el fichero \emph{.run}. Se abrirá un instalador gráfico intuitivo.
 
-\end{itemize}
+Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que se nos indicó durante la instalación, si no hemos modificado las opciones por defecto, será \emph{https://localhost:3790/}. En la figura \ref{fig:meta3} podemos ver la apariencia.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/Atacante_metasploit_grafico.png}
+\caption{Metasploit Gráfico}
+\label{fig:meta3}
+\end{figure}
 
 \end{document}
