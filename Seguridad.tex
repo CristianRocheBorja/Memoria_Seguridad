@@ -50,7 +50,7 @@
   stringstyle=\color{red}\ttfamily,
   commentstyle=\color{green}\ttfamily,
   morecomment=[l][\color{magenta}]{\#}
-}  
+}
 
 \hypersetup{
     bookmarks=true,         % show bookmarks bar?
@@ -135,6 +135,7 @@ Cristian Roche Borja \\
 \begin{minipage}{0.4\textwidth}
 \begin{flushright} \large
 Docentes: \\
+Alberto Huertas Celdrán
 Gabriel López Millán
 Gregorio Martínez Pérez
 \end{flushright}
@@ -170,12 +171,11 @@ Gregorio Martínez Pérez
 %\rhead[\thepage]{\thesection. Introducción}
 
 \clearpage
-
 \section{NMAP y Metasploit}
 \rhead[\thepage]{\thesection. NMAP y Metasploit}
 
 \subsection{Víctima}
-Utilizaremos una máquina virtual de prueba. Esta máquina ha sido creada con vulnerabilidades para la práctica de ataques. La URL de descarga es la siguiente: \url{wiki.inf.um.es/metasploitable2/metasploitable-linux-2.0.0.zip}. \\
+Utilizaremos una máquina virtual de prueba. Esta máquina ha sido creada con vulnerabilidades para la práctica de ataques. La URL de descarga es la \href{wiki.inf.um.es/metasploitable2/metasploitable-linux-2.0.0.zip}{siguiente}. \\
 
 La IP de esta máquina es la \texttt{192.168.62.189}.
 
@@ -189,7 +189,7 @@ El equipo que actuará como atacante hace uso de la herramienta NMAP. Para insta
 $ sudo apt-get install namp
 \end{verbatim}
 
-Establecemos en el archivo \texttt{/etc/hosts}, equivalente al DNS local, la IP de la víctima (\texttt{192.168.62.189}) y la denominamos \texttt{metasploitable}, como muestra la figura \ref{fig:nmap1}. \\
+Establecemos en el archivo \emph{/etc/hosts}, equivalente al DNS local, la IP de la víctima (\texttt{192.168.62.189}) y la denominamos \texttt{metasploitable}, como muestra la figura \ref{fig:nmap1}. \\
 
 \begin{figure}[htbp]
 \centering
@@ -215,7 +215,7 @@ $ nmap metasploitable
 De forma un poco más elaborada, se puede ejecutar el escaneo de puertos haciendo uso de otras técnicas:
 
 \begin{itemize}
-  \item Mediante listado de equipos: \$ nmap 192.168.62.1 192.168.62.10 192.168.62.189
+  \item Mediante listado de equipos: \texttt{\$ nmap 192.168.62.1 192.168.62.10 192.168.62.189}
   \item Mediante subred: \$ nmap 192.168.62.0/24
   \item Mediante un fichero que almacene las IPs (o las expresiones de las mismas) a analizar: \$ nmap -iL hosts.txt, como muestra la figura \ref{fig:nmap3}.
 \end{itemize}
@@ -272,14 +272,14 @@ A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comando
   \label{fig:nmap6}
   \end{figure}
 \end{itemize}
-  
+
 % #######################   Scripts NMAP   ##################################
 
 \subsection{Scripts NMAP}
 \subsubsection{Scripts /usr/share/nmap/scripts}
 En la instalación de NMAP se crea el directorio \textit{/usr/share/nmap/scripts}, este directorio contiene una lista de scripts implementados por otros usuarios y que están diseñados para ser invocados desde el comando nmap. A continuación se describen algunos:
 \begin{itemize}
-\item \texttt{http-git.nse}: Realiza una conexión al puerto 80 de la víctima en busca de un servidor web activo, si el puerto está abierto, se intenta localizar un directorio \emph{.git}. La existencia de este directorio implica que la víctima está realizando un control de versiones, por tanto, el siguiente paso que realiza el script es la búsqueda de coincidencias en \emph{Github}, si se encuentran coincidencias (por un perfil o proyecto público), se muestran un mensaje al usuario con toda la información que se ha podido extraer de la víctima de su repositorio. 
+\item \texttt{http-git.nse}: Realiza una conexión al puerto 80 de la víctima en busca de un servidor web activo, si el puerto está abierto, se intenta localizar un directorio \emph{.git}. La existencia de este directorio implica que la víctima está realizando un control de versiones, por tanto, el siguiente paso que realiza el script es la búsqueda de coincidencias en \emph{Github}, si se encuentran coincidencias (por un perfil o proyecto público), se muestran un mensaje al usuario con toda la información que se ha podido extraer de la víctima de su repositorio.
 \item \texttt{smb-server-stats.nse}: Este script explota una un fallo de \emph{Samba} corriendo sobre sistemas operativos de Windows, este vulnerabilidad permite que un usuario externo pueda solicitar los datos estadísticos del servicio, recopilando así valiosa información de los archivos que se comparten.
 \item \texttt{ssh2-enum-algos.nse}: Devuelve los algoritmos de cifrado y compresión que tiene implementados la víctima. Esta información puede ser muy útil para reducir considerablemente el tiempo de los ataques por fuerza bruta.
 \item \texttt{dhcp-discover.nse}: Script que recopila información del servidor DHCP de la red, se imprimirá por pantalla al usuario el valor de cada uno de los campos que se obtienen del DHCP (Gateway, mácara de subred, router, nombre de dominio, etc...). Para el funcionamiento del script no es necesario consumir una dirección IP.
@@ -290,10 +290,10 @@ Se pueden crear nuevos scripts adaptados a nuestras necesidades, que automaticen
 \item Comprobar si el equipo objeto tiene el puerto 80 abierto (el número de puerto se puede cambiar a la hora de ejecutar el comando)
 \item En el caso de que se cumpla el paso anterior, se entiende que existe un servidor web en el equipo, por tanto, se solicita la página \textit{index.html}, dicha página se crea por defecto en los navegadores web.
 \item La página web descargada se almacena en un fichero con el mismo nombre \textit{index.html}
-\end{itemize} 
+\end{itemize}
 Para ejecutar el script, se debe escribir el siguiente comando:
 \begin{verbatim}
-	$ nmap -p 80 <ip> --script=http-index 
+	$ nmap -p 80 <ip> --script=http-index
 \end{verbatim}
 \lstinputlisting[breaklines]{doc/http-index.nse}
 El script contiene un control de errores, por lo que se mostrará uno de los siguientes resultados:
@@ -314,7 +314,7 @@ Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para en
 \caption{Metasploit Portscan Search}
 \label{fig:meta2}
 \end{figure}
-  
+
 \begin{enumerate}
 \item Para este ejemplo haremos uso de \emph{auxiliary/scanner/portscan/tcp}, para ello, lo seleccionamos ejecutando \emph{\$use auxiliary/scanner/portscan/tcp}.
 \item Visualizamos los diferentes parámetros de configuración que permite con el comando \emph{\$show options}.
@@ -329,11 +329,14 @@ Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para en
 \caption{Metasploit Portscan}
 \label{fig:meta1}
 \end{figure}
-  
+
 % #######################   EXPLOTAR VULNERABILIDADES   ##################################
 
+\clearpage
 \section{Explotar Vulnerabilidades}
-Para usuarios que no son expertos en el uso de Metasploit, se recomienda el uso de la interfaz gráfica del programa, se puede descargar desde el siguiente link \url{https://www.rapid7.com/products/metasploit/download/}. La instalación es muy simple en Linux, basta con descargarse el programa, convertirlo en ejecutable con el comando \emph{\$chmod 777 metasploit-latest-linux-x64-installer.run} y ejecutar el fichero \emph{.run}. Se abrirá un instalador gráfico intuitivo.
+\rhead[\thepage]{\thesection. Explotar Vulnerabilidades}
+
+Para usuarios que no son expertos en el uso de Metasploit, se recomienda el uso de la interfaz gráfica del programa, que se puede descargar desde el \href{https://www.rapid7.com/products/metasploit/download/}{siguiente enlace}. La instalación es muy simple en Linux, basta con descargarse el programa, convertirlo en ejecutable (\texttt{\$ chmod 777 metasploit-latest-linux-x64-installer.run}) y ejecutar el fichero (\texttt{.run}). Se abrirá un instalador gráfico intuitivo. \\
 
 Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que se nos indicó durante la instalación, si no hemos modificado las opciones por defecto, será \emph{https://localhost:3790/}. En la figura \ref{fig:meta3} podemos ver la apariencia.
 
