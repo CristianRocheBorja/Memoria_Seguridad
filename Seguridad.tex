@@ -170,6 +170,39 @@ Gregorio Martínez Pérez
 %\section{Introducción}
 %\rhead[\thepage]{\thesection. Introducción}
 
+% #######################   OAUTH   ##################################
+
+\clearpage
+\section{Oauth}
+\rhead[\thepage]{\thesection. Oauth}
+
+\subsection{Introducción}
+Open Authorization(Oauth) es un mecanismo un mecanismo de autorización, está estandarizado y es abierto, es decir, disponible públicamente para su uso. El protocolo que implementa Oauth se basa en la \emph{autorización delegada}, se hace uso de una tercera entidad para autenticar al usuario, sin embargo, esta es la utilidad más básica, una vez autenticado a un usuario, se pueden solicitar su información asociada.
+
+Desde el punto de vista del usuario final, este sistema supone una gran ventaja, no necesita de múltiples credenciales en cada uno de los sitios web que frecuenta, basta con disponer de una cuenta de usuario válida en un servidor de autenticación, es el caso de Google, Facebook, etc... grandes empresas que ofrecen este servicio a sus usuarios.
+
+Desde el punto de vista de una mediana empresa, resulta muy sencillo beneficiarse de este mecanismo llegando a acuerdos con empresas de autenticación, como las ya mencionadas. La inclusión en los servicios web es muy sencilla y basta con poner un botón opcional en la página que solicita las credenciales de acceso. El usuario final demostrará su identidad e incluso puede permitir el acceso diferentes apartados(scopes) de su información personal, que está siendo gestionada actualmente por Google, Facebook...
+
+% #######################   ADAPTACIÓN A NUESTRA TOPOLOGÍA   ##################################
+
+\subsection{Adaptación a nuestra topología}
+En nuestro grupo de prácticas, trabajamos dando servicio a un bufete de abogados, cubriendo las necesidades de los trabajadores y de los clientes del bufete. Consideremos que Oauth puede facilitar en gran medida las gestiones online de los clientes, permitiendo la compartición de sus datos con diferentes empresas colaboradoras. No supone una violación de la privacidad del cliente, ya que será este en cada momento quien decida que empresas pueden acceder a su información.
+
+Para que Oauth tenga una apliación real en nuestra topología, es necesario incluír en la escena a una segunda empresa colaboradora, como trabajamos con abogados, es interesante la inclusión de una notaría \texttt{"Notaría Arrigaga Asociados"}. Como trabajamos con un bufete con un buen número de abogados, disponemos de una infraestructura informática  importante, la información de nuestros clientes ya está almacenada en nuestros servidores, la dirección ha decidido que el bufete implantará el servicio de autenticación con Oauth. Cualquier empresa colaboradora que esté interesada en hacer uso de nuestro servicio tendrá que firmar un acuerdo, en el que se incluye las garantías de confidencialidad y los aspectos económicos.
+
+En el momento de la implantación, solo se ha llegado a un acuerdo con la notaría anteriormente mencionada, asumiendo cada actor los siguientes roles:
+\begin{itemize}
+\item \texttt{Bufete de abogados:} Será el encargado de la identificación(\emph{IDP Server}), autorización(\emph{Authorization Server}) y de servir los recursos(\emph{Resource Server}).
+\item \texttt{Notaría:} Actuará como cliente (\emph{Client}).
+\item \texttt{Usurio final:} Será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}). 
+\end{itemize}
+
+% #######################   IMPLEMENTACIÓN   ##################################
+
+\subsection{Implementación}
+
+% #######################   NMAP y Metasploit   ##################################
+
 \clearpage
 \section{NMAP y Metasploit}
 \rhead[\thepage]{\thesection. NMAP y Metasploit}
