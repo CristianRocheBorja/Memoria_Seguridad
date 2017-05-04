@@ -1,28 +1,20 @@
 Notaría_Index: Acceso
 Notaría_Formulario: Acceso
-Request construído: {"client_url":"http:\/\/doroteo2222.mooo.com:8081\/Prueba\/rest\/Identifier","type":"push","client_name":"Notaria","client_icon":"http:\/\/www.example.com\/app.ico","client_description":"Notaria asociada al buffet","redirect_url":"http:\/\/doroteo2222.mooo.com:8081\/Prueba\/rest\/Identifier"}
-IDP_OauthRegistro
-log4j:WARN No appenders could be found for logger (org.apache.oltu.oauth2.ext.dynamicreg.server.validator.PushPullValidator).
-log4j:WARN Please initialize the log4j system properly.
-log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
-ControladorNotaría: ID cliente: someclientid
-ControladorNotaría: Secreto cliente: someclientsecret
-ControladorNotaría: Notaría registrada con éxito en el IDP
 Notaría_Formulario: contenido de la petición->http://doroteo2222.mooo.com:8081/Prueba/rest/Identifier?response_type=response_type&redirect_uri=http%3A%2F%2Fdoroteo2222.mooo.com%3A8081%2FSeguridad_NotariaWeb%2Frest%2FResultado&client_id=someclientid
 IdP_Identifier: Acceso GET inRedirect->http://doroteo2222.mooo.com:8081/Seguridad_NotariaWeb/rest/Resultado
 IdP_Identifier: Mostrando formulario de indentificación
 IdP_Identifier: Acceso POST
 IDP_Identifier: nombre de usuario y contraseña válidos->77777777P/alumno
 IDP_Enviar: analizando huella...
-TasaAcierto: 11
+TasaAcierto: 19
+TasaAcierto: 16
+TasaAcierto: 12
+TasaAcierto: 16
 TasaAcierto: 8
-TasaAcierto: 5
-TasaAcierto: 2
-TasaAcierto: 5
-TasaAcierto: 38
-TasaAcierto: 47
-TasaAcierto: 38
+TasaAcierto: 61
+TasaAcierto: 42
 TasaAcierto: 99
+TasaAcierto: 29
 IDP_Identifier: Huella Verificada!, generando cookie y redirigiendo al cliente...
 Authorize: Acceso
 Authorize: consultando en el IDP si el authCookie es válido...
@@ -30,46 +22,46 @@ IDP_CheckAuthCookie: Acceso
 IDP_CheckAuthCookie: código válido
 Authorize: authCookie validada
 Notaría_Resultado: Acceso
-Notaría_Resultado: AccessToken ->bb7052724e3bb9e037bf6b37f567250d
+Notaría_Resultado: AccessToken ->26270590e096e1688ea66d8fec73cd95
 ################ GET DNI ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: DNI->77777777P
 ################ GET Name ################
 Resource: getName()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: Name->Alicia
 ################ GET SurnName ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: SurnName->Pérez
 ################ GET Phone ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: Phone->987658452
 ################ GET Address ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: Address->Calle Cartagena 12
 ################ GET Email ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: Email->alicia.perez@gmail.com
 ################ GET BirthDate ################
 Resource: getDNI()
-Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"bb7052724e3bb9e037bf6b37f567250d"}
+Controlador_Resource: Petición para validar el AccessToken en el servidor Authorize{"accessToken":"26270590e096e1688ea66d8fec73cd95"}
 Authorize_CheckAccessToken: Acceso
 Authorize_CheckAccessToken: código válido
 Notaría_Resultado: BirthDate->21/08/1992

@@ -310,7 +310,7 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 % #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
 
 \subsubsection{Secuencia de Funcionamiento Interno}
-La imagen \ref{fig:oauth2} muestra un diagrama de flujo, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, solo se muestra la obtención del DNI, en la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
+La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, solo se muestra la obtención del DNI, en la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
 
 \begin{enumerate}
 	\item El usuario accede con su navegador a la página web principal de la Notaría.
@@ -341,16 +341,72 @@ La imagen \ref{fig:oauth2} muestra un diagrama de flujo, en este diagrama se mue
 \label{fig:oauth2}
 \end{figure}
 
+En la figura \ref{fig:oauth3} se muestra el diagrama de secuencia de la obtención del \emph{AccessToken}, el \emph{User Agent} lanza la petición con la \emph{Cookie} al servidor de autorización, este comprueba la validez de la misma consultando al servidor de identificación (quien la generó), este responderá indicando si es válida o no, en caso de serlo, el servidor de autorización genera un \emph{AccessToken} y se lo entrega al \emph{User Agent}. \\
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_secuencia_getToken.png}
+\caption{Diagrama obtener AccessToken.}
+\label{fig:oauth3}
+\end{figure}
+
+
+En la figura \ref{fig:oauth4} se muestra el diagrama de secuencia de la obtención de un recurso. El \emph{Client} manda la solicitud al servidor de recursos adjuntando el \emph{AccessToken}, el servidor de recursos lo valida consultando al servidor de autorización (quien lo generó), si es válido, el servidor de autorización responde con el ID del usuario asociado. Finalmente, el servidor de recursos entrega el recurso al \emph{Client}.	\\
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_obtener_recurso.png}
+\caption{Diagrama obtener resurso.}
+\label{fig:oauth4}
+\end{figure}
+
 % #######################   MANUAL DE USO  ##################################
 
 \subsubsection{Manual de Uso}
 
-user
-77777777P
-23453456L
-78547854G
-pass
-alumno
+El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los usuarios, por lo que su uso es muy simple. Seguiremos los siguientes pasos para probar su funcionamiento:
+
+\begin{itemize}
+	\item Comprobar que todos los servidores están iniciados.
+	
+	\item Comprobar que no tenemos ningún firewall bloqueando el acceso.
+	
+	\item Abrir un navegador web y acceder a la página web de la Notaría \\
+		\url{http://XXXX/Seguridad\_NotariaWeb/rest/Index}	\\
+		(Figura \ref{fig:oauth5})
+	
+	\item Pinchar sobre \emph{Formulario de hipoteca}. Nos llevará a la web de identificación.
+	
+	\item Introducir el DNI/Contraseña y pulsar sobre \emph{Seleccionar archivo} para incluír la imagen de la 		huella digital. Pulsar sobre \emph{Enviar}. \\
+	Credenciales válidas:
+	\begin{itemize}
+		\item DNI: "77777777P" Contraseña: "alumno"
+		\item DNI: "23453456L" Contraseña: "alumno"
+		\item DNI: "78547854G" Contraseña: "alumno"
+	\end{itemize}
+	(Figura \ref{fig:oauth6})
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/notaria_index.png}
+\caption{Notaría Index.}
+\label{fig:oauth5}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/IDP_identifier.png}
+\caption{IDP identificación.}
+\label{fig:oauth6}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/form_autocompleted.png}
+\caption{Formulario de hipoteca autocompletado.}
+\label{fig:oauth7}
+\end{figure}
 
 
 % #######################   NMAP y Metasploit   ##################################
