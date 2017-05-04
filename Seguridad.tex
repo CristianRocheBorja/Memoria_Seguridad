@@ -183,9 +183,9 @@ Desde el punto de vista del usuario final, este sistema supone una gran ventaja,
 
 Desde el punto de vista de una mediana empresa, resulta muy sencillo beneficiarse de este mecanismo llegando a acuerdos con empresas de autenticación, como las ya mencionadas. La inclusión en los servicios web es muy sencilla y basta con poner un botón opcional en la página que solicita las credenciales de acceso. El usuario final demostrará su identidad e incluso puede permitir el acceso diferentes apartados(scopes) de su información personal, que está siendo gestionada actualmente por Google, Facebook...
 
-% #######################   ADAPTACIÓN A NUESTRA TOPOLOGÍA   ##################################
+% #######################   ADAPTACIÓN A LA TOPOLOGÍA   ##################################
 
-\subsection{Adaptación a nuestra topología}
+\subsection{Adaptación a la topología}
 En nuestro grupo de prácticas, trabajamos dando servicio a un bufete de abogados, cubriendo las necesidades de los trabajadores y de los clientes del bufete. Consideremos que Oauth puede facilitar en gran medida las gestiones online de los clientes, permitiendo la compartición de sus datos con diferentes empresas colaboradoras. No supone una violación de la privacidad del cliente, ya que será este en cada momento quien decida que empresas pueden acceder a su información.
 
 Para que Oauth tenga una apliación real en nuestra topología, es necesario incluír en la escena a una segunda empresa colaboradora, como trabajamos con abogados, es interesante la inclusión de una notaría \texttt{"Notaría Arrigaga Asociados"}. Como trabajamos con un bufete con un buen número de abogados, disponemos de una infraestructura informática  importante, la información de nuestros clientes ya está almacenada en nuestros servidores, la dirección ha decidido que el bufete implantará el servicio de autenticación con Oauth. Cualquier empresa colaboradora que esté interesada en hacer uso de nuestro servicio tendrá que firmar un acuerdo, en el que se incluye las garantías de confidencialidad y los aspectos económicos.
@@ -197,9 +197,122 @@ En el momento de la implantación, solo se ha llegado a un acuerdo con la notar�
 \item \texttt{Usurio final:} Será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}). 
 \end{itemize}
 
+En esta práctica la implementación de Oauth no solo se limitará a la autenticación de los clientes del bufete, sino que también se utilizará para facilitar parte de la información personal de los mismos, facilitando las gestiones.
+
 % #######################   IMPLEMENTACIÓN   ##################################
 
 \subsection{Implementación}
+Utilizaremos una implementación basada en el esquema \emph{implicit} como se muestra en la figura \ref{fig:oauth1}. Esta modalidad tiene como característica principal, que es el navegador del propietario de los recursos (Resource Owner) el medio utilizado para interactuar con las diferentes entidades.
+
+Una vez que el \emph{User agent} haya realizado todas las peticiones previas, el \emph{Client}, en en este caso corresponde con la \emph{Notaría}, podrá realizar consultas de la información del \emph{Resource owner} de forma directa en el \emph{Client resource}, este permiso tendrá una duración de 30 segundos, expirado ese periodo, el permiso caducará. Aunque la duración de dicho permiso pueda parecer corta, el fin de esta implementación es que la Notaría pueda consultar casi de forma instantánea los datos del usuario, para rellenar  un formulario con su información personal, obtener algún documento, etc... \\
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{./images/oauth/implicit.jpg}
+\caption{Esquema implicit.}
+\label{fig:oauth1}
+\end{figure}
+
+Para la realización de esta práctica, hemos implementado los servicios con Java Rest, que presenta las siguientes ventajas:
+\begin{enumerate}
+\item Alto rendimiento, soportando un gran número de peticiones simultáneas.
+\item Claridad en el código. Se ve de forma muy clara el tipo de función implementada y el resultado que genera.
+\item Permite la inclusión y lectura de cabeceras HTTP de forma muy clara y en una sola línea de código.
+\item Uso dinámico de las URLs, pudiendo usarlas para recibir parámetros que forman parte de la propia URL. (http://www.notaria.es/{userID}/{userPhone}/)
+\item Dispone de un amplio soporte y documentación para la resolución de problemas.
+\item La librería de Oauth esta implementada también en Java Rest, por lo que se hace más sencilla la adaptación. \\
+\end{enumerate}
+
+A la hora de resolver las dependencias con otras librerías, hemos optado por el uso de \emph{Maven}, que tiene las siguientes ventajas:
+\begin{enumerate}
+\item Soportado de forma nativa en Eclipse.
+\item Fácil conversión de un proyecto tradicional a uno maven.
+\item Amplio soporte y documentación de uso.
+\item No es necesario descargar las librerías, solo se incluyen las referencias y se descargan automáticamente.
+\item Basándonos en el punto anterior, el tamaño del proyecto final es muy pequeño.
+\item Maven dispone de la librería de Oauth en su repositorio.
+\end{enumerate}
+
+% #######################   IMPLEMENTACIÓN   ##################################
+
+\subsubsection{URLs y Servidores}
+A continuación, se muestra una lista con los diferentes servidores que hemos implementado, así como las URLs de las que dispone cada uno. Así se podrá entender de forma más clara el funcionamiento de nuestro esquema.
+
+\begin{itemize}
+\item \texttt{ServidorWeb Notaría(Client)}
+	\begin{itemize}
+		\item \emph{/Seguridad\_NotariaWeb/rest/Index	GET} \\
+		Página de inicio de la Notaría, en la que se puede visualizar el índice de contenidos.
+		
+		\item \emph{/Seguridad\_NotariaWeb/rest/Formulario	GET} \\
+		Muestra un mensaje indicando que el formulario al que se ha accedido necesita consultar datos 					personales del usuario, después de 5 segundos realiza una redirección. Si la Notaría no se encontraba 			registrada, realiza el registro antes de redirigir.
+		
+		\item \emph{/Seguridad\_NotariaWeb/rest/Resultado	GET} \\
+		Se llama cuando el usuario ya ha obtenido la \emph{Cookie} del servidor IDP. Pide el \emph{AccessToken} 		al servidor de autorización y, si lo obtiene con éxito, realiza las consultas al servidor de recursos. 			Como resultado, se muestra un formulario al usuario autocompletado con sus datos personales.
+	\end{itemize}
+	
+\item \texttt{Servidor Identificación(IDP)}
+	\begin{itemize}
+		\item \emph{/Seguridad\_IDP/rest/OauthRegistro	POST} \\
+		Recibe las peticiones de registro, registra al \emph{Client} y envía la respuesta.
+		
+		\item \emph{/Seguridad\_IDP/rest/Identifier	GET} \\
+		Muestra una página web en la que el usuario debe introducir la imagen de su huella digital y su DNI/			Contraseña. Al pulsar enviar, se realiza un POST a la misma URL.
+		
+		\item \emph{/Seguridad\_IDP/rest/Identifier	POST} \\
+		Recibe la información de identificación del usuario, valida por niveles cada uno de los datos, la 				detección de un dato no válido implica no comprobar los siguientes. En primer lugar el DNI/Contraseña, 			ya que es el menos costoso desde el punto de vista computacional.
+		Si se superan todos los niveles de identificación, se genera una \emph{Cookie} para el cliente.
+		
+		\item \emph{/Seguridad\_IDP/rest/CheckAuthCookie	POST} \\		
+		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el 					\emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del 			usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 					\emph{Unauthorized}.		
+		
+		\item \emph{/Seguridad\_IDP/rest/Error	GET} \\
+		Página de error mostrada para indicar al usuario el fallo de alguno de los pasos.
+	\end{itemize}
+	
+\item \texttt{Servidor Autorización(Authorize)}
+	\begin{itemize}
+		\item \emph{/Seguridad\_Authorize/rest/Authorize	POST} \\
+		Recibe la \emph{Cookie} y los datos de identificación del \emph{Client}. En primer lugar, se verifica 			que los datos del \emph{Client} sean válidos, posteriormente se valida la \emph{Cookie} presentada 				(Esta validación se realiza lanzando una consulta al IDP {/Seguridad\_IDP/rest/CheckAuthCookie}). 				Si toda la información es correcta, se genera un \emph{AccessToken} y se redirecciona.
+		
+		\item \emph{/Seguridad\_Authorize/rest/CheckAccessToken	POST} \\
+		Esta página es invocada por el servidor de recursos para validar el \emph{AccessToken} que el 					\emph{Client} le ha presentado. Recibe el \emph{AccessToken} en formato Json y devuelve el \emph{ID} 			del	usuario asociado a ese \emph{AccessToken}, en el caso de que no sea válido, mostrará un error 401 			\emph{Unauthorized}.
+	\end{itemize}
+	
+\item \texttt{Servidor Recursos(Resource)}
+	\begin{itemize}
+		\item \emph{/Seguridad\_ResourceServer/rest/DNI	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el número de DNI en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/Name	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el nombre en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/Surname	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el apellido de DNI en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/Phone	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el número de teléfono en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/Address	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve la dirección en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/Email	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el email en formato Json.
+		
+		\item \emph{/Seguridad\_ResourceServer/rest/BirthDate	GET} \\
+		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve la fecha de nacimiento en formato Json.
+	\end{itemize}
+\end{itemize}
+
+% #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
+
+\subsubsection{Secuencia de Funcionamiento Interno}
+
+
+% #######################   MANUAL DE USO  ##################################
+
+\subsubsection{Manual de Uso}
+
 
 % #######################   NMAP y Metasploit   ##################################
 
