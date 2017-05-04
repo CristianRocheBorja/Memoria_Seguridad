@@ -202,7 +202,7 @@ En esta práctica la implementación de Oauth no solo se limitará a la autentic
 % #######################   IMPLEMENTACIÓN   ##################################
 
 \subsection{Implementación}
-Utilizaremos una implementación basada en el esquema \emph{implicit} como se muestra en la figura \ref{fig:oauth1}. Esta modalidad tiene como característica principal, que es el navegador del propietario de los recursos (Resource Owner) el medio utilizado para interactuar con las diferentes entidades.
+Utilizaremos una implementación basada en el esquema \emph{implicit} como se muestra en la figura \ref{fig:oauth1}. Esta modalidad tiene como característica principal, que es el navegador del propietario de los recursos (Resource Owner) el medio utilizado para interactuar con las diferentes entidades. Modificaremos ligeramente el esquema separando la identificación y la autenticación en dos servidores independientes.
 
 Una vez que el \emph{User agent} haya realizado todas las peticiones previas, el \emph{Client}, en en este caso corresponde con la \emph{Notaría}, podrá realizar consultas de la información del \emph{Resource owner} de forma directa en el \emph{Client resource}, este permiso tendrá una duración de 30 segundos, expirado ese periodo, el permiso caducará. Aunque la duración de dicho permiso pueda parecer corta, el fin de esta implementación es que la Notaría pueda consultar casi de forma instantánea los datos del usuario, para rellenar  un formulario con su información personal, obtener algún documento, etc... \\
 
@@ -248,7 +248,7 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 		Muestra un mensaje indicando que el formulario al que se ha accedido necesita consultar datos 					personales del usuario, después de 5 segundos realiza una redirección. Si la Notaría no se encontraba 			registrada, realiza el registro antes de redirigir.
 		
 		\item \emph{/Seguridad\_NotariaWeb/rest/Resultado	GET} \\
-		Se llama cuando el usuario ya ha obtenido la \emph{Cookie} del servidor IDP. Pide el \emph{AccessToken} 		al servidor de autorización y, si lo obtiene con éxito, realiza las consultas al servidor de recursos. 			Como resultado, se muestra un formulario al usuario autocompletado con sus datos personales.
+		Se llama cuando el usuario ya ha obtenido el \emph{AccessToken} del servidor de autorización. Cuando 			recibe el \emph{AccessToken} realiza las consultas al servidor de recursos. Como resultado, se muestra 			un formulario al usuario autocompletado con sus datos personales.
 	\end{itemize}
 	
 \item \texttt{Servidor Identificación(IDP)}
@@ -263,6 +263,9 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 		Recibe la información de identificación del usuario, valida por niveles cada uno de los datos, la 				detección de un dato no válido implica no comprobar los siguientes. En primer lugar el DNI/Contraseña, 			ya que es el menos costoso desde el punto de vista computacional.
 		Si se superan todos los niveles de identificación, se genera una \emph{Cookie} para el cliente.
 		
+		\item \emph{/Seguridad\_IDP/rest/Identifier/redirect	POST} \\
+		Transforma la petición POST del cliente, que en este momento contiene la imagen de la huella y el 				usuario y contraseña, en una petición GET dirigida al servidor de autorización.
+		
 		\item \emph{/Seguridad\_IDP/rest/CheckAuthCookie	POST} \\		
 		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el 					\emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del 			usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 					\emph{Unauthorized}.		
 		
@@ -272,7 +275,7 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 	
 \item \texttt{Servidor Autorización(Authorize)}
 	\begin{itemize}
-		\item \emph{/Seguridad\_Authorize/rest/Authorize	POST} \\
+		\item \emph{/Seguridad\_Authorize/rest/Authorize	GET} \\
 		Recibe la \emph{Cookie} y los datos de identificación del \emph{Client}. En primer lugar, se verifica 			que los datos del \emph{Client} sean válidos, posteriormente se valida la \emph{Cookie} presentada 				(Esta validación se realiza lanzando una consulta al IDP {/Seguridad\_IDP/rest/CheckAuthCookie}). 				Si toda la información es correcta, se genera un \emph{AccessToken} y se redirecciona.
 		
 		\item \emph{/Seguridad\_Authorize/rest/CheckAccessToken	POST} \\
@@ -307,11 +310,47 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 % #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
 
 \subsubsection{Secuencia de Funcionamiento Interno}
+La imagen \ref{fig:oauth2} muestra un diagrama de flujo, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, solo se muestra la obtención del DNI, en la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
 
+\begin{enumerate}
+	\item El usuario accede con su navegador a la página web principal de la Notaría.
+	
+	\item El usuario intenta acceder al formulario de solicitud de hipoteca, este formulario precisa de la 			autenticación del usuario y su información personal. Como el usuario ya es miembro del bufete de abogados 		(empresa colaboradora), se delega en ellos la autenticación y la obtención de recursos. Por tanto, 				redirigimos al usuario	\emph{Redirect.html}.
+	
+	\item La primera parada es el servidor de identificación, este devolverá al cliente una página web con un 		formulario de indentificación \emph{Identifier.html}. El usuario completará la información requerida y 			pulsará en el botón \emph{Enviar}.
+	
+	\item Se recibe la información de identificación en el servidor IDP, se valida, se genera la 					\emph{CookiePass} y se responde con una redirección \emph{Redirect.html}.
+	
+	\item Esta última redirección simplemente convierte el mensaje POST que aún contiene la huella y el DNI y 		contraseña en un mensaje GET, redirigiendo nuevamente al servidor de autorización \emph{Authorize.html}.
+	
+	\item El servidor de autorización recibe la \emph{CookiePass}, verifica que la petición sea lícita, valida 		la \emph{CookiePass}(consultando al IDP si es válida), genera un \emph{AccessToken} y realiza una 				redirección a la web de la Notaría \emph{Resultado.html}. 
+	
+	\item Llegados a este punto, la Notaría ya tiene el código con el que puede realizar las consultas en el 		servidor de recursos, en cada petición presentará el \emph{AccessToken}. Por ejemplo, \emph{dni.html} para 		obtener el DNI.
+	
+	\item El servidor de recursos solo recibe el \emph{AccessToken}, no necesita recibir más información, 			porque al consultar al servidor de autorización si es válido, este puede contestar o bien, diciendo que no 		es un código válido \emph{401 Unauthorized} o, con el ID del usuario al que pertenece ese 						\emph{AccessToken} en formato Json. Teniendo el ID del usuario, el servidor de recursos consulta en su base 	de datos y responde con los datos solicitados en formato Json.
+	
+	\item La Notaría está programada de tal forma que realizará tantas peticiones como sean necesarias para 		obtener la información requerida por el formulario. Como resultado, se mostrará el formulario al usuario 		final totalmente autocompletado \emph{Resultado.html(Autocompleted)}.
+	
+	
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_flujo_useragent.png}
+\caption{Diagrama User Agent.}
+\label{fig:oauth2}
+\end{figure}
 
 % #######################   MANUAL DE USO  ##################################
 
 \subsubsection{Manual de Uso}
+
+user
+77777777P
+23453456L
+78547854G
+pass
+alumno
 
 
 % #######################   NMAP y Metasploit   ##################################
