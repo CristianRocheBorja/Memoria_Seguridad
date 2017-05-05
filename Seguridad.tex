@@ -15,6 +15,7 @@
 \usepackage{listings}
 \usepackage{cite}
 %\bibliographystyle{alpha}
+\usepackage[official]{eurosym}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
 \usepackage{subfigure}
@@ -307,10 +308,53 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 	\end{itemize}
 \end{itemize}
 
+% #######################   ELECCIÓN DE CREDENCIALES  ##################################
+
+\subsubsection{Elección de Credenciales}
+
+Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta que sus accesos serán remotos (no podemos realizar una comprobación físicamente), hemos establecido dos factores de autenticación. El usuario debe demostrar que posee ''algo'' y que sabe ''algo''. Siguiendo con la idea de que el uso de Oauth sea algo cómodo, que facilite las gestiones del usuario y que aún así mantenga un alto grado de seguridad, hemos decido implantar los siguientes factores:
+
+\begin{enumerate}
+	\item \texttt{DNI/Contraseña:} El número del DNI es algo que el usuario \emph{sabe}, si no es el caso, lo 		puede consultar fácilmente. La contraseña será facilitada al usuario por los miembros del Bufete, previa 		solicitud, esta contraseña será generada y almacenada en el servidor de identificación, que será el 			encargado de posteriormente comprobar su validez. \\
+	Hacemos uso del número de DNI por dos motivos:
+	\begin{enumerate}
+		\item Es un número que ya posee el usuario.
+		\item Al ser un código único, lo utilizamos en la propia base de datos como ID del usuario, aumentando 			la eficiencia de las consultas (con una consulta de ID, tenemos el ID y el DNI) y reduciendo el espacio 		empleado para almacenar la información de un usuario, no será necesario tener un campo exclusivo para 			el ID. \\
+	\end{enumerate}
+	
+	Como ya se ha mencionado, la contraseña es generada por el servidor del Bufete, se ha implementado la 			generación de forma que cumplirá los siguientes requisitos:
+	\begin{enumerate}
+		\item Longitud mínima ocho caracteres.
+		\item Incluye, al menos, una letra mayúscula.
+		\item Incluye, al menos, un símbolo.
+		\item Longitud máxima veinte caracteres. Necesario para controlar la entrada máxima en la web de 				identificación.
+		\item Solo hará uso de caracteres ASCII, para comodidad de clientes extranjeros.
+		\item No será una contraseña de la lista de contraseñas más habituales.
+		\item No contendrá repeticiones.
+		\item Tendrá una fecha de caducidad de un año, a contar desde la generación de la misma.
+		\item No podrá ser igual a una contraseña antigua del usuario. El servidor no borrará las contraseñas 			caducadas.
+	\end{enumerate}
+	
+	\item \texttt{Huella Digital:} Es algo que el usuario \emph{posee}, es de tipo biométrico. Cuando un 			usuario se da de alta en el Bufete de abogados, se le tomarán huellas dactilares de dos dedos, cinco 			patrones de cada una, estos patrones serán almacenados en la base de datos del servidor de identificación. 		Es un proceso muy sencillo y rápido, además, cualquier usuario puede utilizar un lector de huellas en sus 		ordenadores personales, tienen un precio muy bajo(20\euro{} aproximadamente las versiones más baratas) y 		muchos equipos, como teléfonos móviles y ordenadores portátiles, ya lo incluyen.
+	Para que la huella sea considerada válida, deberá cumplir los siguientes requisitos:
+	\begin{enumerate}
+		\item Tasa de acierto superior a un 85\%. En todos nuestros tests, la tasa de acierto resultó superior 			al 97\%.
+		\item Threshold superior al 65\%.
+	\end{enumerate}	 
+	
+\end{enumerate}
+
 % #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
 
 \subsubsection{Secuencia de Funcionamiento Interno}
 La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, solo se muestra la obtención del DNI, en la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_flujo_useragent.png}
+\caption{Diagrama User Agent.}
+\label{fig:oauth2}
+\end{figure}
 
 \begin{enumerate}
 	\item El usuario accede con su navegador a la página web principal de la Notaría.
@@ -334,12 +378,7 @@ La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se
 	
 \end{enumerate}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_flujo_useragent.png}
-\caption{Diagrama User Agent.}
-\label{fig:oauth2}
-\end{figure}
+
 
 En la figura \ref{fig:oauth3} se muestra el diagrama de secuencia de la obtención del \emph{AccessToken}, el \emph{User Agent} lanza la petición con la \emph{Cookie} al servidor de autorización, este comprueba la validez de la misma consultando al servidor de identificación (quien la generó), este responderá indicando si es válida o no, en caso de serlo, el servidor de autorización genera un \emph{AccessToken} y se lo entrega al \emph{User Agent}. \\
 
@@ -369,44 +408,46 @@ El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los 
 \begin{itemize}
 	\item Comprobar que todos los servidores están iniciados.
 	
-	\item Comprobar que no tenemos ningún firewall bloqueando el acceso.
+	\item Comprobar que no tenemos ningún firewall bloqueando el acceso a los servidores.
 	
 	\item Abrir un navegador web y acceder a la página web de la Notaría \\
 		\url{http://XXXX/Seguridad\_NotariaWeb/rest/Index}	\\
 		(Figura \ref{fig:oauth5})
-	
-	\item Pinchar sobre \emph{Formulario de hipoteca}. Nos llevará a la web de identificación.
-	
-	\item Introducir el DNI/Contraseña y pulsar sobre \emph{Seleccionar archivo} para incluír la imagen de la 		huella digital. Pulsar sobre \emph{Enviar}. \\
-	Credenciales válidas:
-	\begin{itemize}
-		\item DNI: "77777777P" Contraseña: "alumno"
-		\item DNI: "23453456L" Contraseña: "alumno"
-		\item DNI: "78547854G" Contraseña: "alumno"
-	\end{itemize}
-	(Figura \ref{fig:oauth6})
-\end{itemize}
-
+		
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/notaria_index.png}
 \caption{Notaría Index.}
 \label{fig:oauth5}
 \end{figure}
-
+	
+	\item Pinchar sobre \emph{Formulario de hipoteca} (Nos llevará a la web de identificación).
+	
+	\item Introducir el DNI/Contraseña y pulsar sobre \emph{Seleccionar archivo} para incluír la imagen de la 		huella digital. Pulsar \emph{Enviar}. (Figura \ref{fig:oauth6}) \\
+	Estas son las credenciales válidas introducidas en la base de datos:
+	\begin{itemize}
+		\item DNI: ''77777777P'' Contraseña: ''alumno''
+		\item DNI: ''23453456L'' Contraseña: ''alumno''
+		\item DNI: ''78547854G'' Contraseña: alumno''
+	\end{itemize}
+	
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/IDP_identifier.png}
 \caption{IDP identificación.}
 \label{fig:oauth6}
 \end{figure}
-
+	
+	\item Como resultado, se mostrará el formulario de hipoteca autocompletado(Notaría) con la información 			obtenida de los servidores del bufete. (Figura \ref{fig:oauth7}) \\
+	
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/form_autocompleted.png}
 \caption{Formulario de hipoteca autocompletado.}
 \label{fig:oauth7}
 \end{figure}
+
+\end{itemize}
 
 
 % #######################   NMAP y Metasploit   ##################################
