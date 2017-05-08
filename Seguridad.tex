@@ -360,4 +360,84 @@ Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que s
 \label{fig:meta3}
 \end{figure}
 
+
+%%%%%%%%%% Snort
+\clearpage
+\section{Snort}
+\rhead[\thepage]{\thesection. Snort}
+
+\subsection{Configuración}
+
+El primer paso es instalar Snort en la máquina que hace de router entre las organizaciones.
+
+\begin{verbatim}
+  $ sudo apt-get install snort
+\end{verbatim}
+
+Como vemos en la imagen \ref{fig:snort1}, el establecimiento de un rango de IPs es determinante para el uso del servicio.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{./images/SnortInstalacion.jpg}
+\caption{TODO}
+\label{fig:snort1}
+\end{figure}
+
+A continuación se configura el servicio, modificando el fichero \emph{/etc/snort/snort.conf} y estableciendo los siguientes parámetros:
+
+\begin{itemize}
+  \item ipvar HOME\_NET 192.168.N1.0/24
+  \item ipvar EXTERNAL\_NET !\$HOME\_NET
+  \item ipvar DNS\_SERVERS \$HOME\_NET
+  \item ipvar SMTP\_SERVERS    \$HOME\_NET
+  \item ipvar HTTP\_SERVERS    \$HOME\_NET
+  \item ipvar SQL\_SERVERS     \$HOME\_NET
+  \item ipvar TELNET\_SERVERS  \$HOME\_NET
+  \item ipvar HTTP\_PORTS      80
+  \item ipvar SHELLCODE\_PORTS !80
+  \item ipvar ORACLE\_PORTS    1521
+\end{itemize}
+
+\subsection{Ejecución}
+
+Además de las reglas que hay añadidas por defecto, para poder hacer pruebas concretas y observar el funcionamiento de Snort, añadimos la siguiente línea al fichero \emph{/etc/snort/rules/local.rules}, que establece una alerta cuando detecte mensajes ICMP.
+
+\begin{verbatim}
+  $ alert icmp any any -> $HOME_NET any (msg:"ICMP test";
+  sid:10000001; rev:001)
+\end{verbatim}
+
+A continuación, lanzamos el servicio. En la figura \ref{fig:snort2} se observa el servicio iniciado. \\
+
+\begin{verbatim}
+  $ sudo snort -i enp0s3 –u snort –g snort -l /var/log/snort/
+  -A full -c /etc/snort/snort.conf
+\end{verbatim}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/SnortInicio.png}
+\caption{TODO}
+\label{fig:snort2}
+\end{figure}
+
+Seguidamente, lanzamos un ping desde la máquina atacante hacia la organización que el router protege (imagen \ref{fig:snort3}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/SnortPing.png}
+\caption{TODO}
+\label{fig:snort3}
+\end{figure}
+
+Si, tras el ping, accedemos a los archivos de log (imagen \ref{fig:snort4}), podemos ver cómo hay un acceso desde la máquina atacante.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/SnortPortLog.png}
+\caption{TODO}
+\label{fig:snort4}
+\end{figure}
+
+
 \end{document}
