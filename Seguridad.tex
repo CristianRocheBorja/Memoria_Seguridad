@@ -379,7 +379,7 @@ Como vemos en la imagen \ref{fig:snort1}, el establecimiento de un rango de IPs 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\textwidth]{./images/SnortInstalacion.jpg}
-\caption{TODO}
+\caption{Configuración de Snort durante la instalación.}
 \label{fig:snort1}
 \end{figure}
 
@@ -407,26 +407,26 @@ Además de las reglas que hay añadidas por defecto, para poder hacer pruebas co
   sid:10000001; rev:001)
 \end{verbatim}
 
-A continuación, lanzamos el servicio. En la figura \ref{fig:snort2} se observa el servicio iniciado. \\
+A continuación, lanzamos el servicio. En la figura \ref{fig:snort2} se observa el servicio iniciado.
 
 \begin{verbatim}
   $ sudo snort -i enp0s3 –u snort –g snort -l /var/log/snort/
   -A full -c /etc/snort/snort.conf
 \end{verbatim}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=1.0\textwidth]{./images/SnortInicio.png}
-\caption{TODO}
+\includegraphics[width=0.9\textwidth]{./images/SnortInicio.png}
+\caption{Snort iniciado.}
 \label{fig:snort2}
 \end{figure}
 
-Seguidamente, lanzamos un ping desde la máquina atacante hacia la organización que el router protege (imagen \ref{fig:snort3}).
+Seguidamente, lanzamos un ping desde la máquina atacante hacia la organización que el router protege, como muestra la figura \ref{fig:snort3}).
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/SnortPing.png}
-\caption{TODO}
+\caption{Ping del atacante a la víctima.}
 \label{fig:snort3}
 \end{figure}
 
@@ -435,9 +435,85 @@ Si, tras el ping, accedemos a los archivos de log (imagen \ref{fig:snort4}), pod
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/SnortPortLog.png}
-\caption{TODO}
+\caption{Fichero portlog.scan tras ping.}
 \label{fig:snort4}
 \end{figure}
+
+\subsection{Detección de ataques}
+
+A continuación vamos a ejemplificar el procedimiento que el atacante sigue para llevar a cabo un ataque. Al mismo tiempo que se realiza, podemos ver los logs que detectan dicho ataque gracias a Snort.
+
+\begin{enumerate}
+  \item Escanear puertos en busca de un agujero por el que entrar. \\
+
+  Tras ejecutar el comando nmap que se indica a continuación, se puede ver que son diversos los puertos que hay accesibles en la víctima. En este ejemplo, vamos a atacar el puerto 23, correspondiente a telnet.
+
+  \begin{verbatim}
+  $ npam -p 1-20000 192.168.62.189
+  \end{verbatim}
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/SnortEscaneoNmap.png}
+  \caption{Escaneo nmap y logs asociados.}
+  \label{fig:snort5}
+  \end{figure}
+
+  \item Acceder a la máquina en dicho puerto. \\
+
+  Para que Snort detecte este ataque, primero debe estar configurada la detección del mismo. Para ello, añadimos en el fichero \emph{/etc/snort/snort.conf} la línea correspondiente a las reglas de telnet, como observamos en la figura \ref{fig:snort6}. \\
+
+  Además, conviene añadir en el fichero \emph{/etc/snort/rules/local.rules} las alertas para telnet, como se ve en la figura \ref{fig:snort7}.
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/SnortRules.png}
+  \caption{Fichero snort.conf.}
+  \label{fig:snort6}
+  \end{figure}
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/SnortLocal.png}
+  \caption{Fichero local.rules.}
+  \label{fig:snort7}
+  \end{figure}
+
+  Una vez configurado lo anterior y relanzado el servicio, procedemos a atacar el puerto con telnet, como refleja la figura \ref{fig:snort8}.
+
+  \begin{verbatim}
+   $ telnet 192.168.62.189
+  \end{verbatim}
+
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/SnortTelnet.png}
+  \caption{Comando telnet y logs asociados.}
+  \label{fig:snort8}
+  \end{figure}
+
+  \item Ejecutar una orden o un shell (/bin/sh o /bin/bash) en la víctima. \\
+
+  Una vez dentro de la víctima, podemos hacer lo que queramos. En este caso, ejecutamos un shell.
+
+  \begin{verbatim}
+   $ nc 192.168.62.189 23 << _EOF_
+   > /bin/sh
+   > nc
+   > _EOF_
+  \end{verbatim}
+
+  En la figura \ref{fig:snort9} se pueden observar los logs generados de tal shell.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./images/Snortnc.png}
+  \caption{Logs generados tras nc.}
+  \label{fig:snort9}
+  \end{figure}
+
+\end{enumerate}
+
 
 
 \end{document}
