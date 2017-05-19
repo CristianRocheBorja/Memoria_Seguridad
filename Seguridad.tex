@@ -349,6 +349,9 @@ Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para en
 \section{Explotar Vulnerabilidades}
 \rhead[\thepage]{\thesection. Explotar Vulnerabilidades}
 
+% #######################   INSTALACIÓN DE LA INTERFAZ GRÁFICA   ##################################
+
+\subsection{Instalación de la interfaz gráfica}
 Para usuarios que no son expertos en el uso de Metasploit, se recomienda el uso de la interfaz gráfica del programa, que se puede descargar desde el \href{https://www.rapid7.com/products/metasploit/download/}{siguiente enlace}. La instalación es muy simple en Linux, basta con descargarse el programa, convertirlo en ejecutable (\texttt{\$ chmod 777 metasploit-latest-linux-x64-installer.run}) y ejecutar el fichero (\texttt{.run}). Se abrirá un instalador gráfico intuitivo. \\
 
 Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que se nos indicó durante la instalación, si no hemos modificado las opciones por defecto, será \emph{https://localhost:3790/}. En la figura \ref{fig:meta3} podemos ver la apariencia.
@@ -360,6 +363,41 @@ Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que s
 \label{fig:meta3}
 \end{figure}
 
+% #######################   VNC POR FUERZA BRUTA   ##################################
+
+\subsection{VNC por fuerza bruta}
+A continuación, se muestra un ataque al servicio VNC.
+\begin{itemize}
+	\item Realizamos un escaneo de puertos para verificar que el de VNC está abierto. Con NMAP se ve claramente, indica el nombre de servicio.
+	\begin{verbatim}
+		$ sudo nmap metasploitable
+	\end{verbatim}
+	
+	\item Accedemos a la consola de Metasploit.
+		\begin{verbatim}
+			$ sudo msfconsole
+		\end{verbatim}
+	
+	\item Realizamos una búsqueda de los módulos relativos a VNC.
+		\begin{verbatim}
+			msf > search vnc
+		\end{verbatim}
+	
+	\item Utilizaremos el módulo \emph{vnc\_login}, lo selecionamos.
+		\begin{verbatim}
+			msf > use auxiliary/scanner/vnc/vnc_login
+		\end{verbatim}
+	
+	\item Fijamos los parámetros del ataque. Figura \ref{fig:vnc1}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/vnc/parametros_ataque_vnc.png}
+\caption{Parámetro ataque VNC.}
+\label{fig:vnc1}
+\end{figure}
+	
+\end{itemize}
 
 %%%%%%%%%% Snort
 \clearpage
