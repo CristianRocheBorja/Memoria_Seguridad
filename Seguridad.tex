@@ -354,20 +354,41 @@ Accedemos a la consola de Metasploit con el comando \emph{\$msfconsole}, para en
 \subsection{Instalación de la interfaz gráfica}
 Para usuarios que no son expertos en el uso de Metasploit, se recomienda el uso de la interfaz gráfica del programa, que se puede descargar desde el \href{https://www.rapid7.com/products/metasploit/download/}{siguiente enlace}. La instalación es muy simple en Linux, basta con descargarse el programa, convertirlo en ejecutable (\texttt{\$ chmod 777 metasploit-latest-linux-x64-installer.run}) y ejecutar el fichero (\texttt{.run}). Se abrirá un instalador gráfico intuitivo. \\
 
-Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que se nos indicó durante la instalación, si no hemos modificado las opciones por defecto, será \emph{https://localhost:3790/}. En la figura \ref{fig:meta3} podemos ver la apariencia.
+Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que se nos indicó durante la instalación, si no hemos modificado las opciones por defecto, será \emph{https://localhost:3790/}. En la figura \ref{fig:graf1} podemos ver la apariencia.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.0\textwidth]{./images/Atacante_metasploit_grafico.png}
+\includegraphics[width=1.0\textwidth]{./images/interfaz_metasploit/metasploit_grafico.png}
 \caption{Metasploit Gráfico}
-\label{fig:meta3}
+\label{fig:graf1}
+\end{figure}
+
+Será necesario registrarnos para poder hacer uso del programa. Figura \ref{fig:graf2}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/interfaz_metasploit/grafico_registro.png}
+\caption{Metasploit Gráfico Registro}
+\label{fig:graf2}
+\end{figure}
+
+Dispondremos de un gran número de opciones para obtener información de la víctima y atacarla (Figura \ref{fig:graf3}). El uso de la interfaz es muy cómodo e intuitivo, se pueden realizar todas las operaciones con ''clicks'' de ratón, como la selección de la víctima, el ataque a relizar, etc... Para un uso avanzado, uso de scripts y ciertas opciones, es necesario ser un usuario \emph{plus}, hay que pagar.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/interfaz_metasploit/grafico_opciones.png}
+\caption{Metasploit Gráfico Opciones}
+\label{fig:graf3}
 \end{figure}
 
 % #######################   VNC POR FUERZA BRUTA   ##################################
 
 \subsection{VNC por fuerza bruta}
-A continuación, se muestra un ataque al servicio VNC.
-\begin{itemize}
+A continuación, se muestra un ataque al servicio VNC por \emph{fuerza bruta}. La fuerza bruta, consiste autenticarse usando diferentes contraseñas hasta que se encuentra la correcta, estas contraseñas pueden generarse de forma aleatoria o se puede hacer uso de un \emph{diccionario}. 
+
+Un diccionario es un fichero de texto con una lista de contraseñas, estas contraseñas pueden ser de la lista de contraseñas más habituales o puede ser una lista especializada, contraseñas que los fabricantes ponen a sus dispositivos por defecto, bien basada en un algoritmo que ya ha sido descubierto o que todos los dispositivos tengan la misma. \\
+
+\begin{enumerate}
 	\item Realizamos un escaneo de puertos para verificar que el de VNC está abierto. Con NMAP se ve claramente, indica el nombre de servicio.
 	\begin{verbatim}
 		$ sudo nmap metasploitable
@@ -389,7 +410,17 @@ A continuación, se muestra un ataque al servicio VNC.
 		\end{verbatim}
 
 	\item Fijamos los parámetros del ataque. Figura \ref{fig:vnc1}.
-
+		\begin{enumerate}
+			\item Máquina objetivo \emph{metasploitable}.
+			\item Número de hilos de ejecución 20.
+			\item Velocidad de prueba de credenciales.
+		\end{enumerate}
+		\begin{verbatim}
+			msf auxiliary(vnc\_login) > set RHOSTS metasploitable
+			msf auxiliary(vnc\_login) > set THREADS 20
+			msf auxiliary(vnc\_login) > set BRUTEFORCE_SPEED 1
+		\end{verbatim}
+		
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/vnc/parametros_ataque_vnc.png}
@@ -397,7 +428,47 @@ A continuación, se muestra un ataque al servicio VNC.
 \label{fig:vnc1}
 \end{figure}
 
-\end{itemize}
+	\item Lanzamos el ataque.
+		\begin{verbatim}
+			msf auxiliary(vnc\_login) > run
+		\end{verbatim}
+		
+	\item Como resultado, se muestra el resultado del ataque y las credenciales en caso de éxito. Como se puede ver en la figura \ref{fig:vnc1}, la contraseña de acceso es \emph{password}.
+	
+	\item Para la conexión al equipo remoto necesitamos un cliente de VNC, podemos instalar \emph{vinagre}, que se encuentra en el repositorio de Ubuntu. Lo iniciamos en el mismo comando.
+		\begin{verbatim}
+			$ sudo apt-get install vinagre && vinagre
+		\end{verbatim}
+	
+	\item En la ventana que aparece, introducimos el equipo al que nos queremos conectar, en nuestro caso \emph{metasploitable} y pulsamos \emph{Conectar}. Figura \ref{fig:vnc2}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{./images/vnc/equipo_acceso.png}
+\caption{Vinagre.}
+\label{fig:vnc2}
+\end{figure}
+
+	\item Se nos solicitará la contraseña, introducimos la obtenida en el ataque \emph{password} y pulsamos en \emph{Autenticar}. Figura \ref{fig:vnc3}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{./images/vnc/credenciales_acceso.png}
+\caption{VNC credenciales acceso.}
+\label{fig:vnc3}
+\end{figure}
+
+	\item Llegados a este punto ya tendremos establecida una conexión con la víctima vía VNC (Figura \ref{fig:vnc4}). Este puede ser un buen ataque para obtener ficheros de la víctima o monitorizar sus actividades. \\
+	 Aunque en este caso accedemos como usuario root, lo más habitual es que el acceso vía VNC solo esté habilitado para usuarios con un bajo nivel de permisos.
+	
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1\textwidth]{./images/vnc/vnc_conectado.png}
+\caption{Conexión VNC.}
+\label{fig:vnc4}
+\end{figure}
+
+\end{enumerate}
 
 %%%%%%%%%% Snort
 \clearpage
