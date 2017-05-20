@@ -125,7 +125,7 @@
 
 \begin{minipage}{0.4\textwidth}
 \begin{flushleft} \large
-Alumnos:\\
+Estudiantes:\\
 Cristian Roche Borja \\
 \small{DNI: 76581531H}	\\
 \large{Alicia Ruiz Tovar} \\
@@ -372,22 +372,22 @@ A continuación, se muestra un ataque al servicio VNC.
 	\begin{verbatim}
 		$ sudo nmap metasploitable
 	\end{verbatim}
-	
+
 	\item Accedemos a la consola de Metasploit.
 		\begin{verbatim}
 			$ sudo msfconsole
 		\end{verbatim}
-	
+
 	\item Realizamos una búsqueda de los módulos relativos a VNC.
 		\begin{verbatim}
 			msf > search vnc
 		\end{verbatim}
-	
+
 	\item Utilizaremos el módulo \emph{vnc\_login}, lo selecionamos.
 		\begin{verbatim}
 			msf > use auxiliary/scanner/vnc/vnc_login
 		\end{verbatim}
-	
+
 	\item Fijamos los parámetros del ataque. Figura \ref{fig:vnc1}.
 
 \begin{figure}[htbp]
@@ -396,7 +396,7 @@ A continuación, se muestra un ataque al servicio VNC.
 \caption{Parámetro ataque VNC.}
 \label{fig:vnc1}
 \end{figure}
-	
+
 \end{itemize}
 
 %%%%%%%%%% Snort
@@ -551,5 +551,76 @@ A continuación vamos a ejemplificar el procedimiento que el atacante sigue para
   \end{figure}
 
 \end{enumerate}
+
+%%%%%%%%%%%%%%%%% Buffer Overflow
+\clearpage
+\section{Buffer Overflow}
+\rhead[\thepage]{\thesection. Buffer Overflow}
+
+Buffer Overflow es una vulnerabilidad causada por la inserción de datos con tamaño superior al esperado por un buffer. Este hecho provoca el desbordamiento del buffer y la sobrescritura de espacios adyacentes en la pila o incluso en zonas de memoria reservadas para otras cosas. Dichas zonas de memoria pueden contener información
+importante para el correcto funcionamiento del programa o incluso información sensible del usuario o de otros programas. \\
+
+Actualmente los sistemas operativos tienen ciertas medidas para paliar estas vulnerabilidades. Se va a proceder a la desactivación de esas medidas para poder ejecutar los programas:
+
+\begin{itemize}
+  \item Direcciones aleatorias. Actualmente Ubuntu y otros sistemas usan un direccionamiento aleatorio en la pila para hacer que más difícil ejecutar un buffer overflow con éxito. Para desactivarlo:
+  \begin{verbatim}
+  $ sudo sysctl -w kernel.randomize_va_space=0
+  \end{verbatim}
+
+  \item Esquema de protección de pila. En honor a los canarios que se utilizaban en las minas, la pila tiene una palabra denominada canario que coloca entre los buffers y los datos. De tal forma, si el canario no coincide con el original, no se ejecuta el programa. Para desactivarlo:
+  \begin{verbatim}
+  $ gcc -fno-stack-protector programa.c
+  \end{verbatim}
+
+  \item Pila no ejecutable. Ubuntu usa pilas tanto ejecutables como no ejecutables. Sin embargo, utiliza la no ejecutable por defecto para evitar buffer overflows. Para hacerla ejecutable:
+  \begin{verbatim}
+  $ gcc -z execstack programa.c
+  \end{verbatim}
+\end{itemize}
+
+\subsection{Modificación de variables}
+
+Dado el siguiente código funcional (\texttt{myVar.c}), vamos a modificarlo y hacer que genere un buffer overflow.
+
+%%% Importar fichero
+\lstinputlisting[breaklines]{doc/myVar.c}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.325\textwidth]{./images/BOstack.png}
+\caption{Pila de los programas myVar.c y myVar\_BO.c.}
+\label{fig:bo1}
+\end{figure}
+
+La forma de hacerlo es percatarse de que hay un buffer \texttt{c} cuya capacidad es 28 y provocar un desbordamiento en el mismo. Tal como se indica en la figura \ref{fig:bo1}, inmediatamente tras el buffer se encuentra la variable \texttt{myVar}. Así pues, cuando se produzca el desbordamiento en el buffer, se sobreescribirá esta variable y ésta mostrará lo que deseemos. El programa denominado \texttt{myVar\_BO.c} cumple con esta funcionalidad. \\
+
+La comparación entre los resultados de los programas se refleja en la figura \ref{fig:bo2}. \\
+
+%%% Importar fichero
+\lstinputlisting[breaklines]{doc/myVar_BO.c}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/BOmyvar.png}
+\caption{Resultado de los programas myVar.c y myVar\_BO.c.}
+\label{fig:bo2}
+\end{figure}
+
+\subsection{Shellcode}
+
+El apartado anterior contemplaba la posibilidad de, gracias al desbordamiento de buffer, conseguir cambiar el valor a una variable posterior. En esta ocasión, vamos a hacer un desbordamiento que genere un bash gracias a una pila ejecutable. \\
+
+Tras compilar y ejecutar el siguiente código, obtenemos el bash que se muestra en la figura \ref{fig:bo3}.\\
+
+%%% Importar fichero
+\lstinputlisting[breaklines]{doc/call_shellcode.c}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/BOshellcode.png}
+\caption{Resultado de call\_shellcode.c.}
+\label{fig:bo3}
+\end{figure}
 
 \end{document}
