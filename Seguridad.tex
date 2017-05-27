@@ -168,8 +168,26 @@ Gregorio Martínez Pérez
 
 %################## INTRODUCCIÓN
 
-%\section{Introducción}
-%\rhead[\thepage]{\thesection. Introducción}
+\clearpage
+\section{Introducción}
+\rhead[\thepage]{\thesection. Introducción}
+
+La práctica final que a continuación se muestra consiste en el diseño, el prototipado y la puesta en marcha de un conjunto de servicios que se realizan sobre el escenario de red propuesto en el proyecto Lego y sobre el cual se ha ido trabajando a lo largo de la intensificación. \\
+
+Concretamente, los servicios que se han desarrollado para esta asignatura son los siguientes:
+
+\begin{itemize}
+  \item Diseño y prototipado de una solución de control de acceso con autenticación multifactor (MFA) y autorización delegada: Oauth.
+
+  \item Despliegue de un escenario de red para la detección de intrusiones y gestión de vulnerabilidades: NMAP, Metasploit y SNORT.
+  \begin{itemize}
+    \item Despliegue de un IDS/Snort dentro de la red.
+    \item Realización de un análisis de vulnerabilidades basado en Metasploit.
+  \end{itemize}
+
+  \item Programación de Buffer Overflows.
+
+\end{itemize}
 
 % #######################   OAUTH   ##################################
 
@@ -177,10 +195,9 @@ Gregorio Martínez Pérez
 \section{Oauth}
 \rhead[\thepage]{\thesection. Oauth}
 
-\subsection{Introducción}
-Open Authorization(Oauth) es un mecanismo un mecanismo de autorización, está estandarizado y es abierto, es decir, disponible públicamente para su uso. El protocolo que implementa Oauth se basa en la \emph{autorización delegada}, se hace uso de una tercera entidad para autenticar al usuario, sin embargo, esta es la utilidad más básica, una vez autenticado a un usuario, se pueden solicitar su información asociada.
+Open Authorization(Oauth) es un mecanismo un mecanismo de autorización, está estandarizado y es abierto, es decir, disponible públicamente para su uso. El protocolo que implementa Oauth se basa en la \emph{autorización delegada}, se hace uso de una tercera entidad para autenticar al usuario, sin embargo, esta es la utilidad más básica, una vez autenticado a un usuario, se pueden solicitar su información asociada. \\
 
-Desde el punto de vista del usuario final, este sistema supone una gran ventaja, no necesita de múltiples credenciales en cada uno de los sitios web que frecuenta, basta con disponer de una cuenta de usuario válida en un servidor de autenticación, es el caso de Google, Facebook, etc... grandes empresas que ofrecen este servicio a sus usuarios.
+Desde el punto de vista del usuario final, este sistema supone una gran ventaja, no necesita de múltiples credenciales en cada uno de los sitios web que frecuenta, basta con disponer de una cuenta de usuario válida en un servidor de autenticación, es el caso de Google, Facebook, etc... grandes empresas que ofrecen este servicio a sus usuarios. \\
 
 Desde el punto de vista de una mediana empresa, resulta muy sencillo beneficiarse de este mecanismo llegando a acuerdos con empresas de autenticación, como las ya mencionadas. La inclusión en los servicios web es muy sencilla y basta con poner un botón opcional en la página que solicita las credenciales de acceso. El usuario final demostrará su identidad e incluso puede permitir el acceso diferentes apartados(scopes) de su información personal, que está siendo gestionada actualmente por Google, Facebook...
 
@@ -195,7 +212,7 @@ En el momento de la implantación, solo se ha llegado a un acuerdo con la notar�
 \begin{itemize}
 \item \texttt{Bufete de abogados:} Será el encargado de la identificación(\emph{IDP Server}), autorización(\emph{Authorization Server}) y de servir los recursos(\emph{Resource Server}).
 \item \texttt{Notaría:} Actuará como cliente (\emph{Client}).
-\item \texttt{Usurio final:} Será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}). 
+\item \texttt{Usurio final:} Será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}).
 \end{itemize}
 
 En esta práctica la implementación de Oauth no solo se limitará a la autenticación de los clientes del bufete, sino que también se utilizará para facilitar parte de la información personal de los mismos, facilitando las gestiones.
@@ -259,65 +276,65 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 	\begin{itemize}
 		\item \emph{/Seguridad\_NotariaWeb/rest/Index	GET} \\
 		Página de inicio de la Notaría, en la que se puede visualizar el índice de contenidos.
-		
+
 		\item \emph{/Seguridad\_NotariaWeb/rest/Formulario	GET} \\
 		Muestra un mensaje indicando que el formulario al que se ha accedido necesita consultar datos 					personales del usuario, después de 5 segundos realiza una redirección. Si la Notaría no se encontraba 			registrada, realiza el registro antes de redirigir.
-		
+
 		\item \emph{/Seguridad\_NotariaWeb/rest/Resultado	GET} \\
 		Se llama cuando el usuario ya ha obtenido el \emph{AccessToken} del servidor de autorización. Cuando 			recibe el \emph{AccessToken} realiza las consultas al servidor de recursos. Como resultado, se muestra 			un formulario al usuario autocompletado con sus datos personales.
 	\end{itemize}
-	
+
 \item \texttt{Servidor Identificación(IDP)}
 	\begin{itemize}
 		\item \emph{/Seguridad\_IDP/rest/OauthRegistro	POST} \\
 		Recibe las peticiones de registro, registra al \emph{Client} y envía la respuesta.
-		
+
 		\item \emph{/Seguridad\_IDP/rest/Identifier	GET} \\
 		Muestra una página web en la que el usuario debe introducir la imagen de su huella digital y su DNI/			Contraseña. Al pulsar enviar, se realiza un POST a la misma URL.
-		
+
 		\item \emph{/Seguridad\_IDP/rest/Identifier	POST} \\
 		Recibe la información de identificación del usuario, valida por niveles cada uno de los datos, la 				detección de un dato no válido implica no comprobar los siguientes. En primer lugar el DNI/Contraseña, 			ya que es el menos costoso desde el punto de vista computacional.
 		Si se superan todos los niveles de identificación, se genera una \emph{Cookie} para el cliente.
-		
+
 		\item \emph{/Seguridad\_IDP/rest/Identifier/redirect	POST} \\
 		Transforma la petición POST del cliente, que en este momento contiene la imagen de la huella y el 				usuario y contraseña, en una petición GET dirigida al servidor de autorización.
-		
-		\item \emph{/Seguridad\_IDP/rest/CheckAuthCookie	POST} \\		
-		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el 					\emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del 			usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 					\emph{Unauthorized}.		
-		
+
+		\item \emph{/Seguridad\_IDP/rest/CheckAuthCookie	POST} \\
+		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el 					\emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del 			usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 					\emph{Unauthorized}.
+
 		\item \emph{/Seguridad\_IDP/rest/Error	GET} \\
 		Página de error mostrada para indicar al usuario el fallo de alguno de los pasos.
 	\end{itemize}
-	
+
 \item \texttt{Servidor Autorización(Authorize)}
 	\begin{itemize}
 		\item \emph{/Seguridad\_Authorize/rest/Authorize	GET} \\
 		Recibe la \emph{Cookie} y los datos de identificación del \emph{Client}. En primer lugar, se verifica 			que los datos del \emph{Client} sean válidos, posteriormente se valida la \emph{Cookie} presentada 				(Esta validación se realiza lanzando una consulta al IDP {/Seguridad\_IDP/rest/CheckAuthCookie}). 				Si toda la información es correcta, se genera un \emph{AccessToken} y se redirecciona.
-		
+
 		\item \emph{/Seguridad\_Authorize/rest/CheckAccessToken	POST} \\
 		Esta página es invocada por el servidor de recursos para validar el \emph{AccessToken} que el 					\emph{Client} le ha presentado. Recibe el \emph{AccessToken} en formato Json y devuelve el \emph{ID} 			del	usuario asociado a ese \emph{AccessToken}, en el caso de que no sea válido, mostrará un error 401 			\emph{Unauthorized}.
 	\end{itemize}
-	
+
 \item \texttt{Servidor Recursos(Resource)}
 	\begin{itemize}
 		\item \emph{/Seguridad\_ResourceServer/rest/DNI	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el número de DNI en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/Name	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el nombre en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/Surname	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el apellido de DNI en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/Phone	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el número de teléfono en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/Address	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve la dirección en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/Email	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve el email en formato Json.
-		
+
 		\item \emph{/Seguridad\_ResourceServer/rest/BirthDate	GET} \\
 		Consulta al servidor de autorización la validez del \emph{AccessToken} presentado, en esta consulta 			recibe el ID del usuario asociado. Devuelve la fecha de nacimiento en formato Json.
 	\end{itemize}
@@ -337,7 +354,7 @@ Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta 
 		\item Es un número que ya posee el usuario.
 		\item Al ser un código único, lo utilizamos en la propia base de datos como ID del usuario, aumentando 			la eficiencia de las consultas (con una consulta de ID, tenemos el ID y el DNI) y reduciendo el espacio 		empleado para almacenar la información de un usuario, no será necesario tener un campo exclusivo para 			el ID. \\
 	\end{enumerate}
-	
+
 	Como ya se ha mencionado, la contraseña es generada por el servidor del Bufete, se ha implementado la 			generación de forma que cumplirá los siguientes requisitos:
 	\begin{enumerate}
 		\item Longitud mínima ocho caracteres.
@@ -350,14 +367,14 @@ Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta 
 		\item Tendrá una fecha de caducidad de un año, a contar desde la generación de la misma.
 		\item No podrá ser igual a una contraseña antigua del usuario. El servidor no borrará las contraseñas 			caducadas.
 	\end{enumerate}
-	
+
 	\item \texttt{Huella Digital:} Es algo que el usuario \emph{posee}, es de tipo biométrico. Cuando un 			usuario se da de alta en el Bufete de abogados, se le tomarán huellas dactilares de dos dedos, cinco 			patrones de cada una, estos patrones serán almacenados en la base de datos del servidor de identificación. 		Es un proceso muy sencillo y rápido, además, cualquier usuario puede utilizar un lector de huellas en sus 		ordenadores personales, tienen un precio muy bajo(20\euro{} aproximadamente las versiones más baratas) y 		muchos equipos, como teléfonos móviles y ordenadores portátiles, ya lo incluyen.
 	Para que la huella sea considerada válida, deberá cumplir los siguientes requisitos:
 	\begin{enumerate}
 		\item Tasa de acierto superior a un 85\%. En todos nuestros tests, la tasa de acierto resultó superior 			al 97\%.
 		\item Threshold superior al 65\%.
-	\end{enumerate}	 
-	
+	\end{enumerate}
+
 \end{enumerate}
 
 % #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
@@ -374,24 +391,24 @@ La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se
 
 \begin{enumerate}
 	\item El usuario accede con su navegador a la página web principal de la Notaría.
-	
+
 	\item El usuario intenta acceder al formulario de solicitud de hipoteca, este formulario precisa de la 			autenticación del usuario y su información personal. Como el usuario ya es miembro del bufete de abogados 		(empresa colaboradora), se delega en ellos la autenticación y la obtención de recursos. Por tanto, 				redirigimos al usuario	\emph{Redirect.html}.
-	
+
 	\item La primera parada es el servidor de identificación, este devolverá al cliente una página web con un 		formulario de indentificación \emph{Identifier.html}. El usuario completará la información requerida y 			pulsará en el botón \emph{Enviar}.
-	
+
 	\item Se recibe la información de identificación en el servidor IDP, se valida, se genera la 					\emph{CookiePass} y se responde con una redirección \emph{Redirect.html}.
-	
+
 	\item Esta última redirección simplemente convierte el mensaje POST que aún contiene la huella y el DNI y 		contraseña en un mensaje GET, redirigiendo nuevamente al servidor de autorización \emph{Authorize.html}.
-	
-	\item El servidor de autorización recibe la \emph{CookiePass}, verifica que la petición sea lícita, valida 		la \emph{CookiePass}(consultando al IDP si es válida), genera un \emph{AccessToken} y realiza una 				redirección a la web de la Notaría \emph{Resultado.html}. 
-	
+
+	\item El servidor de autorización recibe la \emph{CookiePass}, verifica que la petición sea lícita, valida 		la \emph{CookiePass}(consultando al IDP si es válida), genera un \emph{AccessToken} y realiza una 				redirección a la web de la Notaría \emph{Resultado.html}.
+
 	\item Llegados a este punto, la Notaría ya tiene el código con el que puede realizar las consultas en el 		servidor de recursos, en cada petición presentará el \emph{AccessToken}. Por ejemplo, \emph{dni.html} para 		obtener el DNI.
-	
+
 	\item El servidor de recursos solo recibe el \emph{AccessToken}, no necesita recibir más información, 			porque al consultar al servidor de autorización si es válido, este puede contestar o bien, diciendo que no 		es un código válido \emph{401 Unauthorized} o, con el ID del usuario al que pertenece ese 						\emph{AccessToken} en formato Json. Teniendo el ID del usuario, el servidor de recursos consulta en su base 	de datos y responde con los datos solicitados en formato Json.
-	
+
 	\item La Notaría está programada de tal forma que realizará tantas peticiones como sean necesarias para 		obtener la información requerida por el formulario. Como resultado, se mostrará el formulario al usuario 		final totalmente autocompletado \emph{Resultado.html(Autocompleted)}.
-	
-	
+
+
 \end{enumerate}
 
 
@@ -422,22 +439,22 @@ El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los 
 
 \begin{itemize}
 	\item Comprobar que todos los servidores están iniciados.
-	
+
 	\item Comprobar que no tenemos ningún firewall bloqueando el acceso a los servidores.
-	
+
 	\item Abrir un navegador web y acceder a la página web de la Notaría \\
 		\url{http://XXXX/Seguridad\_NotariaWeb/rest/Index}	\\
 		(Figura \ref{fig:oauth5})
-		
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/notaria_index.png}
 \caption{Notaría Index.}
 \label{fig:oauth5}
 \end{figure}
-	
+
 	\item Pinchar sobre \emph{Formulario de hipoteca} (Nos llevará a la web de identificación).
-	
+
 	\item Introducir el DNI/Contraseña y pulsar sobre \emph{Seleccionar archivo} para incluír la imagen de la 		huella digital. Pulsar \emph{Enviar}. (Figura \ref{fig:oauth6}) \\
 	Estas son las credenciales válidas introducidas en la base de datos, la huella debe estar relacionada con el usuario:
 	\begin{itemize}
@@ -445,16 +462,16 @@ El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los 
 		\item DNI: ''23453456L'' Contraseña: ''alumno''	(Huellas 6-9)
 		\item DNI: ''78547854G'' Contraseña: alumno''
 	\end{itemize}
-	
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/IDP_identifier.png}
 \caption{IDP identificación.}
 \label{fig:oauth6}
 \end{figure}
-	
+
 	\item Como resultado, se mostrará el formulario de hipoteca autocompletado(Notaría) con la información 			obtenida de los servidores del bufete. (Figura \ref{fig:oauth7}) \\
-	
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.1\textwidth]{./images/oauth/form_autocompleted.png}
@@ -790,7 +807,7 @@ PASS: user
 
 \begin{verbatim}
 $ gcc -o vspoc232 vspoc232.c
-$ ./vspoc232 192.168.62.189 user user 1
+$ ./vspoc232 192.168.62.189 21 user user 1
 \end{verbatim}
 
     En la figura \ref{fig:metade1} podemos observar cómo han sido necesarias 287 peticiones para ocasionar la denegación de servicio.
@@ -943,7 +960,7 @@ Además de las reglas que hay añadidas por defecto, para poder hacer pruebas co
 A continuación, lanzamos el servicio. En la figura \ref{fig:snort2} se observa el servicio iniciado.
 
 \begin{verbatim}
-  $ sudo snort -i enp0s8 –u snort –g snort -l /var/log/snort/
+  $ sudo snort -i enp0s8 -u snort -g snort -l /var/log/snort/
   -A full -c /etc/snort/snort.conf
 \end{verbatim}
 
@@ -1047,6 +1064,55 @@ A continuación vamos a ejemplificar el procedimiento que el atacante sigue para
 
 \end{enumerate}
 
+\subsubsection{Detección de denegación de servicio}
+
+Antes de poder ponerle remedio a un ataque del que en teoría desconocemos su funcionamiento, en primer lugar debemos observar y comprender qué está pasando. \\
+
+La figura \ref{fig:snort10} muestra un fragmento de las trazas capturadas durante el ataque de denegación de servicio. En ellas, vemos cómo se produce una petición incongruente al servicio ftp (traza nº 1842 o 1857) que se va repitiendo en el tiempo sistemáticamente. Con ello, se puede concluir que se está produciendo un ataque DoS al servicio ftp.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/SNORTtrazas.png}
+\caption{Trazas durante la denegación de servicio.}
+\label{fig:snort10}
+\end{figure}
+
+Una vez analizada la situación, podemos añadir una regla a Snort para que se detecte automáticamente la próxima vez que suceda. \\
+
+En nuestro caso, añadimos el paquete de reglas para ftp (figura \ref{fig:snort11}) que incluye una regla en concreto para detectar esta denegación de servicio. La peculariedad de esta regla radica en la detección del mensaje envíado por el atacante mediante una expresión regular, que se indica en el parámetro pcre.
+
+\begin{verbatim}
+alert tcp $EXTERNAL_NET any -> $HOME_NET 21
+  (msg:"FTP EXPLOIT STAT * dos attempt";
+  flow:to_server,established;
+  content:"STAT";
+  nocase;
+  pcre:"/^STAT\s+[^\n]*\x2a/smi";
+  reference:bugtraq,4482;
+  reference:cve,2002-0073;
+  reference:nessus,10934;
+  classtype:attempted-dos;
+  sid:1777;
+  rev:7;)
+\end{verbatim}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{./images/SnortFtp.png}
+\caption{Adición de las reglas de ftp.}
+\label{fig:snort11}
+\end{figure}
+
+Una vez reiniciado el servicio, se vuelve a ejecutar la denegación de servicio y se observa que Snort detecta perfectamente el ataque (figura \ref{fig:snort12}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/Snortftpdos.png}
+\caption{Detección de la denegación de servicio.}
+\label{fig:snort12}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%% Buffer Overflow
 \clearpage
 \section{Buffer Overflow}
@@ -1102,7 +1168,7 @@ La comparación entre los resultados de los programas se refleja en la figura \r
 \label{fig:bo2}
 \end{figure}
 
-\subsection{Shellcode}
+\subsection{Shellcode básico}
 
 El apartado anterior contemplaba la posibilidad de, gracias al desbordamiento de buffer, conseguir cambiar el valor a una variable posterior. En esta ocasión, vamos a hacer un desbordamiento que genere un bash gracias a una pila ejecutable. \\
 
@@ -1117,5 +1183,63 @@ Tras compilar y ejecutar el siguiente código, obtenemos el bash que se muestra 
 \caption{Resultado de call\_shellcode.c.}
 \label{fig:bo3}
 \end{figure}
+
+\subsection{Shellcode avanzado}
+
+De forma similar al shellcode básico, tenemos la llamada al bash en un shellcode que hemos de conseguir ejecutar dado un código básico. \\
+
+Para ello, lo que hacemos es rellenar el buffer de NOPs e incluir el shellcode al final del fichero. Además, se coloca la dirección a saltar encima del shellcode (figura \ref{fig:bo5}).\\
+
+La intención inicial fue provocar que el return que tiene la pila de la función bof hacia el main se vea alterado justamente por la dirección a saltar. Sim embargo, acceder a tal dirección exacta no es trivial, por lo que hemos decidido aprovechar los NOPs del buffer inicial para corromper ese return (figura \ref{fig:bo6}) y hacer que recorra la pila hasta que se encuentre con la dirección que hemos introducido, salte y se ejecute el shellcode, obteniendo así un shell como root (figura \ref{fig:bo4}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/BOpilaexploit.png}
+\caption{Pila del programa exploit.c.}
+\label{fig:bo5}
+\end{figure}
+
+
+%%% Importar fichero
+\lstinputlisting[breaklines]{doc/exploit.c}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/BOpilastack.png}
+\caption{Pila del programa stack.c antes y después del Buffer Overflow.}
+\label{fig:bo6}
+\end{figure}
+
+%%% Importar fichero
+\lstinputlisting[breaklines]{doc/stack.c}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./images/BOexploit.png}
+\caption{Resultado de exploit.c. y stack.c.}
+\label{fig:bo4}
+\end{figure}
+
+%%%%%%%%%%%%%%%%% Conclusiones y valoraciones personales
+\clearpage
+\section{Conclusiones y valoraciones personales}
+\rhead[\thepage]{\thesection. Conclusiones y valoraciones personales}
+
+Es obvio que cada sistema desarrollado necesita paralelamente otro sistema de seguridad que lo proteja ante ataques. \\
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{|p{3.0cm}||p{3.0cm}|p{3.0cm}||p{3.0cm}|}
+\hline
+Estudiante & Primera parte & Segunda parte & Total \\
+\hline \hline
+Alicia & 41 & 57 & 98 \\ \hline
+Cristian & 78 & 26 & 104 \\ \hline
+Total & 119 & 83 & 202 \\ \hline
+\end{tabular}
+\caption{Horas dedicadas a cada parte de la práctica.}
+\label{tabla:sencilla}
+\end{center}
+\end{table}
 
 \end{document}
