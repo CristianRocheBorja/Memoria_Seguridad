@@ -695,8 +695,6 @@ Dispondremos de un gran número de opciones para obtener información de la víc
 \subsection{Fuerza bruta}
 A continuación, se muestra un ataque al servicio VNC por \emph{fuerza bruta}. La fuerza bruta, consiste autenticarse usando diferentes contraseñas hasta que se encuentra la correcta, estas contraseñas pueden generarse de forma aleatoria o se puede hacer uso de un \emph{diccionario}. \\
 
-Un diccionario es un fichero de texto con una lista de contraseñas, estas contraseñas pueden ser de la lista de contraseñas más habituales o puede ser una lista especializada, contraseñas que los fabricantes ponen a sus dispositivos por defecto, bien basada en un algoritmo que ya ha sido descubierto o que todos los dispositivos tengan la misma.
-
 \begin{enumerate}
 	\item Realizamos un escaneo de puertos para verificar que el de VNC está abierto. Con NMAP se ve claramente, indica el nombre de servicio.
 	\begin{verbatim}
@@ -777,6 +775,65 @@ Un diccionario es un fichero de texto con una lista de contraseñas, estas contr
 \caption{Conexión VNC.}
 \label{fig:vnc4}
 \end{figure}
+
+\end{enumerate}
+
+% #######################   SSH POR DICCIONARIO   ##################################
+
+\subsection{SSH por Diccionario}
+Como ya se ha mencionado en el apartado anterior, se pueden realizar ataques de fuerza bruta por \emph{diccionario}. Este ataque consiste en probar diferentes credenciales que se cargan desde un fichero al que denominamos \emph{diccionario}. \\
+
+Un diccionario es un fichero de texto con una lista de contraseñas, estas contraseñas pueden ser de la lista de contraseñas más habituales o puede ser una lista especializada, contraseñas que los fabricantes ponen a sus dispositivos por defecto, bien basada en un algoritmo que ya ha sido descubierto o que todos los dispositivos tengan la misma. Existen herramientas para la generación de diccionarios, se introduce la longitud de las claves, los símbolos posibles y se vuelca automáticamente en un fichero todas las combinaciones posibles con esos parámetros. \\
+
+A continuación, se muestra un ejemplo de este tipo de ataque dirigido al servicio \textbf{SSH}:
+\begin{enumerate}
+	\item Realizamos un escaneo con \emph{NMAP} para descubrir los puertos que la víctima tiene abiertos. Figura \ref{fig:ssh1}.
+	
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{./images/ssh/ssh_nmap.png}
+\caption{Escaneo de puertos NMAP.}
+\label{fig:ssh1}
+\end{figure}
+
+
+	\item Aparece el puerto correspondiente al servicio SSH abierto (puerto 22). Creamos un fichero de claves, también podríamos descargarnos uno de internet con las claves más habituales. Figura \ref{fig:ssh2}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{./images/ssh/ssh_claves.png}
+\caption{Creación de un diccionario.}
+\label{fig:ssh2}
+\end{figure}
+
+	\item Accedemos a la consola de Metasploit, buscamos los scripts relacionados con SSH (\$ search ssh) y seleccionamos \emph{ssh\_login} (\$ use auxiliary/scanner/ssh/ssh\_login).
+	
+	\item Listamos las opciones disponibles (\$ show options) y establecemos los parámetros.
+	\begin{verbatim}
+		msf > set RHOSTS metasploitable
+		msf > set VERBOSE true
+		msf > set PASS_FILE /home/alumno/diccionario_userpass.txt
+		msf > set USERNAME msfadmin
+	\end{verbatim}
+	\begin{itemize}
+		\item \texttt{RHOSTS: } Define quién será la víctima, se puede usar la IP o el hostname.
+		\item \texttt{VERBOSE: } Activa la visualización de los logs.
+		\item \texttt{PASS\_FILE: } Establece la ruta del fichero que contiene las contraseñas. Figura \ref{fig:ssh2}.
+		\item  \texttt{USERNAME: } Fija un nombre de usuario, todas las contraseñas del fichero se probarán para ese usuario. Se puede indicar que se utilicen las claves del fichero también como nombre de usuario o tener un fichero con posibles nombres de usuario y otro con contraseñas, en este caso se probarán todas las combinaciones usuario-clave.
+	\end{itemize}
+	
+	\item Finalmente lanzamos el ataque. El resultado se puede ver en la figura \ref{fig:ssh3}.
+		\begin{verbatim}
+			msf > run
+		\end{verbatim}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1\textwidth]{./images/ssh/ssh_fuerza_bruta.png}
+\caption{Ataque SSH.}
+\label{fig:ssh3}
+\end{figure} 
+
+	\item Credenciales obtenidas \emph{msfadmin:msfadmin} (usuario-contraseña).
 
 \end{enumerate}
 
