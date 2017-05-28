@@ -195,32 +195,33 @@ Concretamente, los servicios que se han desarrollado para esta asignatura son lo
 \section{Oauth}
 \rhead[\thepage]{\thesection. Oauth}
 
-Open Authorization(Oauth) es un mecanismo un mecanismo de autorización, está estandarizado y es abierto, es decir, disponible públicamente para su uso. El protocolo que implementa Oauth se basa en la \emph{autorización delegada}, se hace uso de una tercera entidad para autenticar al usuario, sin embargo, esta es la utilidad más básica, una vez autenticado a un usuario, se pueden solicitar su información asociada. \\
+Open Authorization(Oauth) es un mecanismo de autorización, está estandarizado y es abierto, es decir, disponible públicamente para su uso. El protocolo que implementa Oauth se basa en la autorización delegada, se hace uso de una tercera entidad para autenticar al usuario. Sin embargo, ésta es la utilidad más básica, una vez autenticado a un usuario, se pueden solicitar su información asociada. \\
 
-Desde el punto de vista del usuario final, este sistema supone una gran ventaja, no necesita de múltiples credenciales en cada uno de los sitios web que frecuenta, basta con disponer de una cuenta de usuario válida en un servidor de autenticación, es el caso de Google, Facebook, etc... grandes empresas que ofrecen este servicio a sus usuarios. \\
+Desde el punto de vista del usuario final, este sistema supone una gran ventaja, no necesita de múltiples credenciales en cada uno de los sitios web que frecuenta, basta con disponer de una cuenta de usuario válida en un servidor de autenticación. Es el caso de Google, Facebook, etc... grandes empresas que ofrecen este servicio a sus usuarios. \\
 
-Desde el punto de vista de una mediana empresa, resulta muy sencillo beneficiarse de este mecanismo llegando a acuerdos con empresas de autenticación, como las ya mencionadas. La inclusión en los servicios web es muy sencilla y basta con poner un botón opcional en la página que solicita las credenciales de acceso. El usuario final demostrará su identidad e incluso puede permitir el acceso diferentes apartados(scopes) de su información personal, que está siendo gestionada actualmente por Google, Facebook...
+Desde el punto de vista de una mediana empresa, resulta muy sencillo beneficiarse de este mecanismo llegando a acuerdos con empresas de autenticación, como las ya mencionadas. La inclusión en los servicios web es muy sencilla y basta con poner un botón opcional en la página que solicita las credenciales de acceso. El usuario final demostrará su identidad e incluso puede permitir el acceso diferentes apartados (scopes) de su información personal, que está siendo gestionada actualmente por Google, Facebook...
 
 % #######################   ADAPTACIÓN A LA TOPOLOGÍA   ##################################
 
 \subsection{Adaptación a la topología}
-En nuestro grupo de prácticas, damos servicio a un bufete de abogados, cubriendo las necesidades de los trabajadores y de los clientes del mismo. Consideremos que Oauth puede facilitar en gran medida las gestiones online de los clientes, permitiendo la compartición de sus datos con diferentes empresas colaboradoras. No supone una violación de la privacidad del cliente, ya que será este en cada momento quien decida que empresas pueden acceder a su información.	\\
+En nuestro grupo de prácticas, damos servicio a un bufete de abogados, cubriendo las necesidades de los trabajadores y de los clientes del mismo. Consideremos que Oauth puede facilitar en gran medida las gestiones online de los clientes, permitiendo la compartición de sus datos con diferentes empresas colaboradoras. No supone una violación de la privacidad del cliente, ya que será éste en cada momento quien decida que empresas pueden acceder a su información.	\\
 
-Para que Oauth tenga una apliación real en nuestra topología, es necesario incluír en la escena a una segunda empresa colaboradora, como trabajamos con abogados, es interesante la inclusión de una notaría \texttt{"Notaría Arrigaga Asociados"}. Como trabajamos con un bufete con un buen número de abogados, disponemos de una infraestructura informática  importante, la información de nuestros clientes ya está almacenada en nuestros servidores, la dirección ha decidido que el bufete implantará el servicio de autenticación con Oauth. Cualquier empresa colaboradora que esté interesada en hacer uso de nuestro servicio tendrá que firmar un acuerdo, en el que se incluye las garantías de confidencialidad y los aspectos económicos.	\\
+Para que Oauth tenga una apliación real en nuestra topología, es necesario incluir en la escena a una segunda empresa colaboradora. Como trabajamos con abogados, es interesante la inclusión de una notaría a la que vamos a denominar \texttt{"Notaría Arrigaga Asociados"}. Como trabajamos con un bufete con un buen número de abogados, disponemos de una infraestructura informática  importante: la información de nuestros clientes ya está almacenada en nuestros servidores y la dirección ha decidido que el bufete implantará el servicio de autenticación con Oauth. Cualquier empresa colaboradora que esté interesada en hacer uso de nuestro servicio tendrá que firmar un acuerdo, en el que se incluye las garantías de confidencialidad y los aspectos económicos.	\\
 
-En el momento de la implantación, solo se ha llegado a un acuerdo con la notaría anteriormente mencionada, asumiendo cada actor los siguientes roles:
+En el momento de la implantación, sólo se ha llegado a un acuerdo con la notaría anteriormente mencionada, asumiendo cada actor los siguientes roles:
+
 \begin{itemize}
-\item \texttt{Bufete de abogados:} Será el encargado de la identificación(\emph{IDP Server}), autorización(\emph{Authorization Server}) y de servir los recursos(\emph{Resource Server}).
-\item \texttt{Notaría:} Actuará como cliente (\emph{Client}).
-\item \texttt{Usurio final:} Será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}).
+\item \texttt{Bufete de abogados:} será el encargado de la identificación (\emph{IDP Server}), autorización (\emph{Authorization Server}) y de servir los recursos (\emph{Resource Server}).
+\item \texttt{Notaría:} actuará como cliente (\emph{Client}).
+\item \texttt{Usurio final:} será quién hace uso del servicio mediante su navegador web y quien facilite el acceso a sus recursos(\emph{ResourceOwner}).
 \end{itemize}
 
-En esta práctica la implementación de Oauth no solo se limitará a la autenticación de los clientes del bufete, sino que también se utilizará para facilitar parte de la información personal de los mismos, facilitando las gestiones.
+En esta práctica la implementación de Oauth no sólo se limitará a la autenticación de los clientes del bufete, sino que también se utilizará para facilitar parte de la información personal de los mismos, facilitando las gestiones.
 
 % #######################   IMPLEMENTACIÓN   ##################################
 
 \subsection{Implementación}
-Utilizaremos una implementación basada en el esquema \emph{implicit} como se muestra en la figura \ref{fig:oauth1}. Esta modalidad tiene como característica principal, que es el navegador del propietario de los recursos (Resource Owner) el medio utilizado para interactuar con las diferentes entidades. Modificaremos ligeramente el esquema separando la identificación y la autenticación en dos servidores independientes.	\\
+Utilizaremos una implementación basada en el esquema \emph{implicit} como se muestra en la figura \ref{fig:oauth1}. Esta modalidad tiene como característica principal, que es el navegador del propietario de los recursos (\emph{Resource owner}) el medio utilizado para interactuar con las diferentes entidades. Modificaremos ligeramente el esquema separando la identificación y la autenticación en dos servidores independientes.	\\
 
 \begin{figure}[htbp]
 \centering
@@ -229,14 +230,14 @@ Utilizaremos una implementación basada en el esquema \emph{implicit} como se mu
 \label{fig:oauth1}
 \end{figure}
 
-Una vez que el \emph{User agent} haya realizado todas las peticiones previas, el \emph{Client}, en en este caso corresponde con la \emph{Notaría}, podrá realizar consultas de la información del \emph{Resource owner} de forma directa en el \emph{Client resource}, este permiso tendrá una duración de 30 segundos, expirado ese periodo, el permiso caducará. Aunque la duración de dicho permiso pueda parecer corta, el fin de esta implementación es que la Notaría pueda consultar casi de forma instantánea los datos del usuario, para rellenar  un formulario con su información personal, obtener algún documento, etc... \\
+Una vez que el \emph{User agent} haya realizado todas las peticiones previas, el \emph{Client}, en en este caso corresponde con la \emph{Notaría}, podrá realizar consultas de la información del \emph{Resource owner} de forma directa en el \emph{Client resource}. Este permiso tendrá una duración de 30 segundos. Expirado ese periodo, el permiso caducará. Aunque la duración de dicho permiso pueda parecer corta, el fin de esta implementación es que la Notaría pueda consultar casi de forma instantánea los datos del usuario, para rellenar  un formulario con su información personal, obtener algún documento, etc... \\
 
 Para la realización de esta práctica, hemos implementado los servicios con Java Rest, que presenta las siguientes ventajas:
 \begin{enumerate}
 	\item Alto rendimiento, soportando un gran número de peticiones simultáneas.
 	\item Claridad en el código. Se ve de forma muy clara el tipo de función implementada y el resultado que 		genera.
 	\item Permite la inclusión y lectura de cabeceras HTTP de forma muy clara y en una sola línea de código.
-	\item Uso dinámico de las URLs, pudiendo usarlas para recibir parámetros que forman parte de la propia URL. 	(http://www.notaria.es/{userID}/{userPhone}/)
+	\item Uso dinámico de las URLs, pudiendo usarlas para recibir parámetros que forman parte de la propia URL. Por ejemplo: www.notaria.es/\{userID\}/\{userPhone\}/
 	\item Dispone de un amplio soporte y documentación para la resolución de problemas.
 	\item La librería de Oauth esta implementada también en Java Rest, por lo que se hace más sencilla la 			adaptación. \\
 \end{enumerate}
@@ -244,9 +245,9 @@ Para la realización de esta práctica, hemos implementado los servicios con Jav
 A la hora de resolver las dependencias con otras librerías, hemos optado por el uso de \emph{Maven}, que tiene las siguientes ventajas:
 \begin{enumerate}
 	\item Soportado de forma nativa en Eclipse.
-	\item Fácil conversión de un proyecto tradicional a uno maven.
+	\item Fácil conversión de un proyecto tradicional a uno Maven.
 	\item Amplio soporte y documentación de uso.
-	\item No es necesario descargar las librerías, solo se incluyen las referencias y se descargan 					automáticamente.
+	\item No es necesario descargar las librerías, sólo se incluyen las referencias y se descargan automáticamente.
 	\item Basándonos en el punto anterior, el tamaño del proyecto final es muy pequeño.
 	\item Maven dispone de la librería de Oauth en su repositorio.
 \end{enumerate}
@@ -290,17 +291,17 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 		Recibe las peticiones de registro, registra al \emph{Client} y envía la respuesta.
 
 		\item \emph{/Seguridad\_IDP/rest/Identifier	GET} \\
-		Muestra una página web en la que el usuario debe introducir la imagen de su huella digital y su DNI/			Contraseña. Al pulsar enviar, se realiza un POST a la misma URL.
+		Muestra una página web en la que el usuario debe introducir la imagen de su huella digital y su DNI/Contraseña. Al pulsar enviar, se realiza un POST a la misma URL.
 
 		\item \emph{/Seguridad\_IDP/rest/Identifier	POST} \\
-		Recibe la información de identificación del usuario, valida por niveles cada uno de los datos, la 				detección de un dato no válido implica no comprobar los siguientes. En primer lugar el DNI/Contraseña, 			ya que es el menos costoso desde el punto de vista computacional.
+		Recibe la información de identificación del usuario, valida por niveles cada uno de los datos, la detección de un dato no válido implica no comprobar los siguientes. En primer lugar el DNI/Contraseña, ya que es el menos costoso desde el punto de vista computacional.
 		Si se superan todos los niveles de identificación, se genera una \emph{Cookie} para el cliente.
 
 		\item \emph{/Seguridad\_IDP/rest/Identifier/redirect	POST} \\
-		Transforma la petición POST del cliente, que en este momento contiene la imagen de la huella y el 				usuario y contraseña, en una petición GET dirigida al servidor de autorización.
+		Transforma la petición POST del cliente, que en este momento contiene la imagen de la huella y el  usuario y contraseña, en una petición GET dirigida al servidor de autorización.
 
 		\item \emph{/Seguridad\_IDP/rest/CheckAuthCookie	POST} \\
-		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el 					\emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del 			usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 					\emph{Unauthorized}.
+		Esta página es invocada por el servidor de autorización para validar la \emph{Cookie} que el \emph{Client} le ha presentado. Recibe la \emph{Cookie} en formato Json y devuelve el \emph{ID} del usuario asociado a esa \emph{Cookie}, en el caso de que no sea válida, mostrará un error 401 \emph{Unauthorized}.
 
 		\item \emph{/Seguridad\_IDP/rest/Error	GET} \\
 		Página de error mostrada para indicar al usuario el fallo de alguno de los pasos.
@@ -309,7 +310,7 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 \item \texttt{Servidor Autorización(Authorize)}
 	\begin{itemize}
 		\item \emph{/Seguridad\_Authorize/rest/Authorize	GET} \\
-		Recibe la \emph{Cookie} y los datos de identificación del \emph{Client}. En primer lugar, se verifica 			que los datos del \emph{Client} sean válidos, posteriormente se valida la \emph{Cookie} presentada 				(Esta validación se realiza lanzando una consulta al IDP {/Seguridad\_IDP/rest/CheckAuthCookie}). 				Si toda la información es correcta, se genera un \emph{AccessToken} y se redirecciona.
+		Recibe la \emph{Cookie} y los datos de identificación del \emph{Client}. En primer lugar, se verifica que los datos del \emph{Client} sean válidos, posteriormente se valida la \emph{Cookie} presentada (esta validación se realiza lanzando una consulta al IDP {/Seguridad\_IDP/rest/CheckAuthCookie}). Si toda la información es correcta, se genera un \emph{AccessToken} y se redirecciona.
 
 		\item \emph{/Seguridad\_Authorize/rest/CheckAccessToken	POST} \\
 		Esta página es invocada por el servidor de recursos para validar el \emph{AccessToken} que el 					\emph{Client} le ha presentado. Recibe el \emph{AccessToken} en formato Json y devuelve el \emph{ID} 			del	usuario asociado a ese \emph{AccessToken}, en el caso de que no sea válido, mostrará un error 401 			\emph{Unauthorized}.
@@ -343,12 +344,13 @@ A continuación, se muestra una lista con los diferentes servidores que hemos im
 
 % #######################   ELECCIÓN DE CREDENCIALES  ##################################
 
-\subsubsection{Elección de Credenciales}
+\subsubsection{Elección de credenciales}
 
-Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta que sus accesos serán remotos (no podemos realizar una comprobación físicamente), hemos establecido dos factores de autenticación. El usuario debe demostrar que posee ''algo'' y que sabe ''algo''. Siguiendo con la idea de que el uso de Oauth sea algo cómodo, que facilite las gestiones del usuario y que aún así mantenga un alto grado de seguridad, hemos decido implantar los siguientes factores:
+Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta que sus accesos serán remotos (no podemos realizar una comprobación físicamente), hemos establecido dos factores de autenticación: el usuario debe demostrar que posee ``algo'' y que sabe ``algo''. Siguiendo con la idea de que el uso de Oauth sea algo cómodo, que facilite las gestiones del usuario y que aún así mantenga un alto grado de seguridad, hemos decido implantar los siguientes factores:
 
 \begin{enumerate}
 	\item \texttt{DNI/Contraseña:} El número del DNI es algo que el usuario \emph{sabe}, si no es el caso, lo 		puede consultar fácilmente. La contraseña será facilitada al usuario por los miembros del Bufete, previa 		solicitud, esta contraseña será generada y almacenada en el servidor de identificación, que será el 			encargado de posteriormente comprobar su validez. \\
+
 	Hacemos uso del número de DNI por dos motivos:
 	\begin{enumerate}
 		\item Es un número que ya posee el usuario.
@@ -368,8 +370,7 @@ Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta 
 		\item No podrá ser igual a una contraseña antigua del usuario. El servidor no borrará las contraseñas 			caducadas.
 	\end{enumerate}
 
-	\item \texttt{Huella Digital:} Es algo que el usuario \emph{posee}, es de tipo biométrico. Cuando un 			usuario se da de alta en el Bufete de abogados, se le tomarán huellas dactilares de dos dedos, cinco 			patrones de cada una, estos patrones serán almacenados en la base de datos del servidor de identificación. 		Es un proceso muy sencillo y rápido, además, cualquier usuario puede utilizar un lector de huellas en sus 		ordenadores personales, tienen un precio muy bajo(20\euro{} aproximadamente las versiones más baratas) y 		muchos equipos, como teléfonos móviles y ordenadores portátiles, ya lo incluyen.
-	Para que la huella sea considerada válida, deberá cumplir los siguientes requisitos:
+	\item \texttt{Huella Digital:} Es algo que el usuario \emph{posee}, es de tipo biométrico. Cuando un 			usuario se da de alta en el Bufete de abogados, se le tomarán huellas dactilares de dos dedos, cinco 			patrones de cada una, estos patrones serán almacenados en la base de datos del servidor de identificación. 		Es un proceso muy sencillo y rápido, además, cualquier usuario puede utilizar un lector de huellas en sus 		ordenadores personales, tienen un precio muy bajo (20\euro{} aproximadamente las versiones más baratas) y 		muchos equipos, como teléfonos móviles y ordenadores portátiles, ya lo incluyen. Para que la huella sea considerada válida, deberá cumplir los siguientes requisitos:
 	\begin{enumerate}
 		\item Tasa de acierto superior a un 85\%. En todos nuestros tests, la tasa de acierto resultó superior 			al 97\%.
 		\item Threshold superior al 65\%.
@@ -379,12 +380,12 @@ Para identificar de forma segura a los clientes del Bufete y teniendo en cuenta 
 
 % #######################   SECUENCIA DE FUNCIONAMIENTO  INTERNO  ##################################
 
-\subsubsection{Secuencia de Funcionamiento Interno}
-La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, solo se muestra la obtención del DNI, en la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
+\subsubsection{Secuencia de funcionamiento interno}
+La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se muestra gráficamente todos los mensajes enviados y recibidos desde el \emph{User Agent} y el \emph{Client}. Por simplificar el diagrama, sólo se muestra la obtención del DNI. En la resolución práctica se realizan consultas de cada uno de los datos del usuario: nombre, fecha de nacimiento, DNI, apellido, dirección, email, fecha de nacimiento y número de teléfono.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_flujo_useragent.png}
+\includegraphics[width=1.0\textwidth]{./images/oauth/diagrama_flujo_useragent.png}
 \caption{Diagrama User Agent.}
 \label{fig:oauth2}
 \end{figure}
@@ -394,7 +395,7 @@ La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se
 
 	\item El usuario intenta acceder al formulario de solicitud de hipoteca, este formulario precisa de la 			autenticación del usuario y su información personal. Como el usuario ya es miembro del bufete de abogados 		(empresa colaboradora), se delega en ellos la autenticación y la obtención de recursos. Por tanto, 				redirigimos al usuario	\emph{Redirect.html}.
 
-	\item La primera parada es el servidor de identificación, este devolverá al cliente una página web con un 		formulario de indentificación \emph{Identifier.html}. El usuario completará la información requerida y 			pulsará en el botón \emph{Enviar}.
+	\item La primera parada es el servidor de identificación, éste devolverá al cliente una página web con un 		formulario de indentificación \emph{Identifier.html}. El usuario completará la información requerida y 			pulsará en el botón \emph{Enviar}.
 
 	\item Se recibe la información de identificación en el servidor IDP, se valida, se genera la 					\emph{CookiePass} y se responde con una redirección \emph{Redirect.html}.
 
@@ -404,9 +405,9 @@ La imagen \ref{fig:oauth2} muestra un diagrama de secuencia, en este diagrama se
 
 	\item Llegados a este punto, la Notaría ya tiene el código con el que puede realizar las consultas en el 		servidor de recursos, en cada petición presentará el \emph{AccessToken}. Por ejemplo, \emph{dni.html} para 		obtener el DNI.
 
-	\item El servidor de recursos solo recibe el \emph{AccessToken}, no necesita recibir más información, 			porque al consultar al servidor de autorización si es válido, este puede contestar o bien, diciendo que no 		es un código válido \emph{401 Unauthorized} o, con el ID del usuario al que pertenece ese 						\emph{AccessToken} en formato Json. Teniendo el ID del usuario, el servidor de recursos consulta en su base 	de datos y responde con los datos solicitados en formato Json.
+	\item El servidor de recursos sólo recibe el \emph{AccessToken}, no necesita recibir más información, 			porque al consultar al servidor de autorización si es válido, éste puede contestar o bien, diciendo que no 		es un código válido \emph{401 Unauthorized} o, con el ID del usuario al que pertenece ese 						\emph{AccessToken} en formato Json. Teniendo el ID del usuario, el servidor de recursos consulta en su base 	de datos y responde con los datos solicitados en formato Json.
 
-	\item La Notaría está programada de tal forma que realizará tantas peticiones como sean necesarias para 		obtener la información requerida por el formulario. Como resultado, se mostrará el formulario al usuario 		final totalmente autocompletado \emph{Resultado.html(Autocompleted)}.
+	\item La Notaría está programada de tal forma que realizará tantas peticiones como sean necesarias para 		obtener la información requerida por el formulario. Como resultado, se mostrará el formulario al usuario 		final totalmente autocompletado \emph{Resultado.html (Autocompleted)}.
 
 
 \end{enumerate}
@@ -416,7 +417,7 @@ En la figura \ref{fig:oauth3} se muestra el diagrama de secuencia de la obtenci�
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_secuencia_getToken.png}
+\includegraphics[width=1.0\textwidth]{./images/oauth/diagrama_secuencia_getToken.png}
 \caption{Diagrama obtener AccessToken.}
 \label{fig:oauth3}
 \end{figure}
@@ -426,14 +427,14 @@ En la figura \ref{fig:oauth4} se muestra el diagrama de secuencia de la obtenci�
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.1\textwidth]{./images/oauth/diagrama_obtener_recurso.png}
+\includegraphics[width=1.0\textwidth]{./images/oauth/diagrama_obtener_recurso.png}
 \caption{Diagrama obtener resurso.}
 \label{fig:oauth4}
 \end{figure}
 
 % #######################   MANUAL DE USO  ##################################
 
-\subsubsection{Manual de Uso}
+\subsubsection{Manual de uso}
 
 El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los usuarios, por lo que su uso es muy simple. Seguiremos los siguientes pasos para probar su funcionamiento:
 
@@ -448,15 +449,16 @@ El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=1.1\textwidth]{./images/oauth/notaria_index.png}
+\includegraphics[width=1.0\textwidth]{./images/oauth/notaria_index.png}
 \caption{Notaría Index.}
 \label{fig:oauth5}
 \end{figure}
 
-	\item Pinchar sobre \emph{Formulario de hipoteca} (Nos llevará a la web de identificación).
+	\item Pinchar sobre \emph{Formulario de hipoteca} (nos llevará a la web de identificación).
 
 	\item Introducir el DNI/Contraseña y pulsar sobre \emph{Seleccionar archivo} para incluír la imagen de la 		huella digital. Pulsar \emph{Enviar}. (Figura \ref{fig:oauth6}) \\
-	Estas son las credenciales válidas introducidas en la base de datos, la huella debe estar relacionada con el usuario:
+
+	Éstas son las credenciales válidas introducidas en la base de datos. La huella debe estar relacionada con el usuario:
 	\begin{itemize}
 		\item DNI: ''77777777P'' Contraseña: ''alumno'' (Huellas 1-5)
 		\item DNI: ''23453456L'' Contraseña: ''alumno''	(Huellas 6-9)
@@ -470,7 +472,7 @@ El uso de este servicio pretende ser intuitivo y facilitar las gestiones de los 
 \label{fig:oauth6}
 \end{figure}
 
-	\item Como resultado, se mostrará el formulario de hipoteca autocompletado(Notaría) con la información 			obtenida de los servidores del bufete. (Figura \ref{fig:oauth7}) \\
+	\item Como resultado, se mostrará el formulario de hipoteca autocompletado (Notaría) con la información 			obtenida de los servidores del bufete. (Figura \ref{fig:oauth7}) \\
 
 \begin{figure}[htbp]
 \centering
@@ -535,9 +537,9 @@ $ nmap metasploitable
 De forma un poco más elaborada, se puede ejecutar el escaneo de puertos haciendo uso de otras técnicas:
 
 \begin{itemize}
-  \item Mediante listado de equipos: \texttt{\$ nmap 192.168.62.1 192.168.62.10 192.168.62.189}
-  \item Mediante subred: \$ nmap 192.168.62.0/24
-  \item Mediante un fichero que almacene las IPs (o las expresiones de las mismas) a analizar: \$ nmap -iL hosts.txt, como muestra la figura \ref{fig:nmap3}.
+  \item Mediante listado de equipos: \texttt{\$ nmap 192.168.62.1 192.168.62.10}
+  \item Mediante subred: \texttt{\$ nmap 192.168.62.0/24}
+  \item Mediante un fichero que almacene las IPs (o las expresiones de las mismas) a analizar: \texttt{\$ nmap -iL hosts.txt}, como muestra la figura \ref{fig:nmap3}.
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -549,7 +551,7 @@ De forma un poco más elaborada, se puede ejecutar el escaneo de puertos haciend
 
 \subsubsection{NMAP con Metasploit}
 
-También hemos de instalar Mestasploit para hacer uso de él: \url{https://github.com/rapid7/metasploit-framework/wiki/Nightly-Installers}. Una vez instalado, con \texttt{\$ msfconsole} inicializamos Metasploit y la base de datos asociada. \\
+También hemos de \href{https://github.com/rapid7/metasploit-framework/wiki/Nightly-Installers}{instalar Mestasploit} para hacer uso de él. Una vez instalado, con \texttt{\$ msfconsole} inicializamos Metasploit y la base de datos asociada. \\
 
 A continuación, realizamos un scanner básico de la red, almacenando el contenido en la base de datos interna y exportándolo completo de la misma a un fichero, para así analizarlo:
 
@@ -563,7 +565,7 @@ Como muestra la figura \ref{fig:nmap4}, se observa que en dicho fichero encontra
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=1.0\textwidth]{./images/Atacante_scaner_y_BBDD.png}
-\caption{Atacante\_scaner\_y\_BBDD.}
+\caption{Contenido del escaneo.}
 \label{fig:nmap4}
 \end{figure}
 
@@ -574,7 +576,7 @@ Como muestra la figura \ref{fig:nmap4}, se observa que en dicho fichero encontra
 A continuación mostramos algunas trazas obtenidas tras ejecutar ciertos comandos con NMAP.
 
 \begin{itemize}
-  \item \texttt{\$ nmap —scan-delay 1000ms -p 20-30 metasploitable}. En el host \texttt{metasploitable} se lanza un escaneo de puertos cada segundo a un puerto diferente entre los puertos 20 al 30, como muestra la figura \ref{fig:nmap5}. El fin principal de realizar un escaneo de puertos de esta forma es evitar ser detectado por la seguridad que pueda tener la subred.
+  \item \texttt{\$ nmap -scan-delay 1000ms -p 20-30 metasploitable}. En el host \texttt{metasploitable} se lanza un escaneo de puertos cada segundo a un puerto diferente entre los puertos 20 al 30, como muestra la figura \ref{fig:nmap5}. El fin principal de realizar un escaneo de puertos de esta forma es evitar ser detectado por la seguridad que pueda tener la subred.
 
   \begin{figure}[htbp]
   \centering
@@ -1225,7 +1227,17 @@ La intención inicial fue provocar que el return que tiene la pila de la funció
 \section{Conclusiones y valoraciones personales}
 \rhead[\thepage]{\thesection. Conclusiones y valoraciones personales}
 
-Es obvio que cada sistema desarrollado necesita paralelamente otro sistema de seguridad que lo proteja ante ataques. \\
+Es obvio que cada sistema desarrollado, sea programa o servicio, necesita paralelamente otro sistema de seguridad que lo proteja ante ataques. \\
+
+El problema de ayer era controlar y monitorizar el acceso directo a los sistemas, prohibiendo el acceso a todo aquel que no tuviera permiso para acceder. La seguridad del ayer se basaba en el concepto de perímetro, en construir castillos: firewalls, antivirus, etc.  \\
+
+El problema de hoy es que los atacantes han aprendido a volar, a saltar los muros del castillo, o han encontrado pasadizos secretos en la muralla. La seguridad de hoy debe prestar atención a mucho más, pero sin descuidar la seguridad del ayer. \\
+
+Por un lado, el control de acceso forma parte de la seguridad del ayer, aunque la autorización multifactor le da una mejor seguridad. \\
+
+Por otro lado, la detecciónn de intrusiones y la gestiónn de vulnerabilidades ya tienen parte del problema de hoy, puesto que hace falta saber qué estás protegiendo y qué vulnerabilidades tiene para poder protegerlo. Los Buffer Overflow son un ejemplo claro de problemática de hoy, pues atacan directamente a la implementación del servicio. \\
+
+Como valoración de la práctica, comentar que complementa perfectamente a la teoría. Sin embargo, consideramos que la práctica ha excedido el tiempo de dedicación de la misma. A continuación presentamos una tabla resumen de las horas invertidas en las prácticas de la asignatura. \\
 
 \begin{table}[htbp]
 \begin{center}
@@ -1234,7 +1246,7 @@ Es obvio que cada sistema desarrollado necesita paralelamente otro sistema de se
 Estudiante & Primera parte & Segunda parte & Total \\
 \hline \hline
 Alicia & 41 & 57 & 98 \\ \hline
-Cristian & 78 & 26 & 104 \\ \hline
+Cristian & 78 & 26 & 104 \\ \hline \hline
 Total & 119 & 83 & 202 \\ \hline
 \end{tabular}
 \caption{Horas dedicadas a cada parte de la práctica.}
